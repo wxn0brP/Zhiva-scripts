@@ -35,4 +35,8 @@ echo "💜 Zhiva-scripts is installed."
 
 ln -s $HOME/.zhiva/scripts/zhiva/startup.ts $HOME/.zhiva/zhiva-startup
 chmod +x $HOME/.zhiva/zhiva-startup
+
+ln -s $HOME/.zhiva/scripts/zhiva/install.ts $HOME/.zhiva/zhiva-install
+chmod +x $HOME/.zhiva/zhiva-install
+
 echo "💜 Zhiva-startup is installed."
