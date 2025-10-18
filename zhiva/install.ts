@@ -21,3 +21,8 @@ if (existsSync(name)) {
 
 process.chdir(name);
 await $`bun install --production`;
+try {
+    await $`bun run build`;
+} catch (e) {
+    console.log(e);
+}
