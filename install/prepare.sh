@@ -25,7 +25,7 @@ else
     echo "💜 git is installed."
 fi
 
-mkdir -p $HOME/.zhiva
+mkdir -p $HOME/.zhiva/bin
 if [ ! -d $HOME/.zhiva/scripts ]; then
     git clone https://github.com/wxn0brP/Zhiva-scripts.git $HOME/.zhiva/scripts
 else
@@ -33,10 +33,8 @@ else
 fi
 echo "💜 Zhiva-scripts is installed."
 
-ln -s $HOME/.zhiva/scripts/zhiva/startup.ts $HOME/.zhiva/zhiva-startup
-chmod +x $HOME/.zhiva/zhiva-startup
-
-ln -s $HOME/.zhiva/scripts/zhiva/install.ts $HOME/.zhiva/zhiva-install
-chmod +x $HOME/.zhiva/zhiva-install
+ln -s $HOME/.zhiva/scripts/zhiva/startup.ts $HOME/.zhiva/bin/zhiva-startup
+ln -s $HOME/.zhiva/scripts/zhiva/install.ts $HOME/.zhiva/bin/zhiva-install
+chmod +x $HOME/.zhiva/bin/*
 
 echo "💜 Zhiva-startup is installed."
