@@ -66,6 +66,11 @@ if (!skipBaseLib) {
 
 // --- App ---
 const appName = process.argv[2];
+if (appName === "init") {
+    console.log("Init completed");
+    process.exit(0);
+}
+
 if (!appName) {
     console.error("Please provide an app name");
     process.exit(1);
