@@ -72,7 +72,7 @@ await handleComponent("engine");
 await handleComponent("deps");
 
 // --- App ---
-const appName = positionals[0];
+let appName = positionals[0];
 if (appName === "init") {
     console.log("💜 Init completed");
     process.exit(0);
@@ -83,7 +83,13 @@ if (!appName) {
     process.exit(1);
 }
 
-const appPath = isAbsolute(appName) ? appName : join(zhivaPath, "apps", appName);
+let appPath = "";
+if (isAbsolute(appName)) appPath = appName;
+else {
+    appName = appName.includes("/") ? appName : `wxn0brP/${appName}`;
+    appPath = join(zhivaPath, "apps", appName);
+}
+
 if (!existsSync(appPath)) {
     console.error(`App ${appName} does not exist`);
     process.exit(1);

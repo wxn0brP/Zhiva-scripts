@@ -8,16 +8,16 @@ if (!name) {
     console.error("Please provide an app name");
     process.exit(1);
 }
+if (!name.includes("/")) name = `wxn0brP/${name}`;
 
 process.chdir(`${process.env.HOME ?? process.env.USERPROFILE}/.zhiva`);
 if (!existsSync("apps")) mkdirSync("apps", { recursive: true });
 process.chdir("apps");
 
-if (existsSync(name.split("/")[0])) {
+if (existsSync(name)) {
     await $`git pull`;
 } else {
-    if (!name.includes("/")) name = `wxn0brP/${name}`;
-    await $`git clone https://github.com/${name}.git`;
+    await $`git clone https://github.com/${name}.git ${name}`;
 }
 
 process.chdir(name);
