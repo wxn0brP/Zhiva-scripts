@@ -1,22 +1,35 @@
 #!/usr/bin/env bun
 
 import { spawn } from "child_process";
-import { existsSync, mkdirSync } from "fs";
-import { join, resolve } from "path";
-
-function boolArgument(name: string) {
-    const index = process.argv.indexOf(name);
-    if (index === -1) return 0;
-    process.argv.splice(index, 1);
-    return index;
-}
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
+import { delimiter, join, resolve } from "path";
+import { parseArgs } from "util";
 
 // --- Args ---
-let skipEngine = boolArgument("--skip-engine");
-let skipDepsLib = boolArgument("--skip-deps-lib");
-if (boolArgument("-run")) {
-    skipEngine = 1;
-    skipDepsLib = 1;
+const { values, positionals } = parseArgs({
+    options: {
+        help: { type: "boolean", short: "h" },
+        engine: { type: "string", short: "e" },
+        deps: { type: "string", short: "d" },
+    },
+    allowPositionals: true,
+});
+
+if (values.help) {
+    console.log(`
+Usage: zhiva-startup [options] <app-name>
+
+Options:
+  -h, --help            Show this help message
+  -e, --engine <mode>   Update Zhiva engine (default: 0)
+  -d, --deps <mode>     Update Zhiva dependencies (default: 0)
+
+Mode:
+  0 = auto
+  1 = skip
+  2 = force
+`.trimStart());
+    process.exit(0);
 }
 
 // --- Paths ---
@@ -25,12 +38,41 @@ const zhivaPath = join(HOME, ".zhiva");
 if (!existsSync(zhivaPath)) mkdirSync(zhivaPath, { recursive: true });
 process.chdir(zhivaPath);
 
-// --- Engine / base-lib ---
-if (!skipEngine) await import("./engine");
-if (!skipDepsLib) await import("./deps");
+const latestCheck = existsSync("latest-check")
+    ? (+readFileSync("latest-check", "utf-8") || 0)
+    : 0;
+let lastCheckWrite = false;
+const HOUR = 60 * 60 * 1000;
+
+function shouldCheck(mode: number, last: number) {
+    if (mode === 1) return false; // skip
+    if (mode === 2) return true;  // force
+    return Date.now() - last > HOUR; // auto (if > 1h)
+}
+
+async function handleComponent(name: string) {
+    const mode = parseInt(values[name] ?? "0", 10);
+    const doCheck = shouldCheck(mode, latestCheck);
+
+    if (!doCheck) {
+        console.log(`[${name}] skipped (mode ${mode})`);
+        return;
+    }
+
+    console.log(`[${name}] updating (mode ${mode})...`);
+    await import("./" + name);
+
+    if (lastCheckWrite) return;
+    lastCheckWrite = true;
+    writeFileSync("latest-check", String(Date.now()));
+}
+
+// --- Update ---
+await handleComponent("engine");
+await handleComponent("deps");
 
 // --- App ---
-const appName = process.argv[2];
+const appName = positionals[0];
 if (appName === "init") {
     console.log("💜 Init completed");
     process.exit(0);
@@ -52,7 +94,7 @@ process.chdir(appPath);
 const nodePath = [
     resolve(appPath, "node_modules"),
     resolve(zhivaPath, "node_modules")
-].join(":");
+].join(delimiter);
 
 // --- Run Bun ---
 const bun = spawn(
