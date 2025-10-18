@@ -15,12 +15,13 @@ if (!existsSync("apps")) mkdirSync("apps", { recursive: true });
 process.chdir("apps");
 
 if (existsSync(name)) {
+    process.chdir(name);
     await $`git pull`;
 } else {
     await $`git clone https://github.com/${name}.git ${name}`;
+    process.chdir(name);
 }
 
-process.chdir(name);
 await $`bun install --production`;
 try {
     await $`bun run build`;
