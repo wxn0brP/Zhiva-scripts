@@ -2,7 +2,7 @@
 
 import { spawn } from "child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
-import { delimiter, join, resolve } from "path";
+import { delimiter, isAbsolute, join, resolve } from "path";
 import { parseArgs } from "util";
 
 // --- Args ---
@@ -83,7 +83,7 @@ if (!appName) {
     process.exit(1);
 }
 
-const appPath = join(zhivaPath, "apps", appName);
+const appPath = isAbsolute(appName) ? appName : join(zhivaPath, "apps", appName);
 if (!existsSync(appPath)) {
     console.error(`App ${appName} does not exist`);
     process.exit(1);
