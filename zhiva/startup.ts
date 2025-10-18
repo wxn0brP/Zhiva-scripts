@@ -1,8 +1,7 @@
 #!/usr/bin/env bun
 
-import { $ } from "bun";
 import { spawn } from "child_process";
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
+import { existsSync, mkdirSync } from "fs";
 import { join, resolve } from "path";
 
 function boolArgument(name: string) {
@@ -14,10 +13,10 @@ function boolArgument(name: string) {
 
 // --- Args ---
 let skipEngine = boolArgument("--skip-engine");
-let skipBaseLib = boolArgument("--skip-base-lib");
+let skipDepsLib = boolArgument("--skip-deps-lib");
 if (boolArgument("-run")) {
     skipEngine = 1;
-    skipBaseLib = 1;
+    skipDepsLib = 1;
 }
 
 // --- Paths ---
@@ -26,43 +25,9 @@ const zhivaPath = join(HOME, ".zhiva");
 if (!existsSync(zhivaPath)) mkdirSync(zhivaPath, { recursive: true });
 process.chdir(zhivaPath);
 
-const platform = process.platform;
-
 // --- Engine / base-lib ---
-async function checkEngine() {
-    const baseLink = "https://github.com/wxn0brP/Zhiva-native/releases/download/native/";
-    const nv = "zhiva.nv.txt";
-
-    try {
-        const serverVersion = await fetch(baseLink + nv).then(res => res.text());
-        if (existsSync(nv) && readFileSync(nv, "utf-8").trim() === serverVersion.trim()) {
-            return console.log("Zhiva is up to date");
-        }
-
-        console.log("Downloading Zhiva...");
-        await $`curl -L ${baseLink}zhiva-${platform} -o zhiva`;
-        writeFileSync(nv, serverVersion);
-        if (platform !== "win32") await $`chmod +x zhiva`;
-    } catch (e) {
-        console.error("Error downloading/updating Zhiva:", e);
-        if (!existsSync("zhiva")) process.exit(1);
-    }
-}
-
-if (!skipEngine) await checkEngine();
-if (!skipBaseLib) {
-    if (existsSync("node_modules/@wxn0brp/zhiva-base-lib")) {
-        process.chdir("node_modules/@wxn0brp/zhiva-base-lib");
-        try {
-            await $`git pull`;
-            await $`bun install`;
-        } catch { }
-        process.chdir("../../..");
-    } else {
-        await $`mkdir -p node_modules`;
-        await $`git clone https://github.com/wxn0brP/Zhiva-base-lib.git node_modules/@wxn0brp/zhiva-base-lib`;
-    }
-}
+if (!skipEngine) await import("./engine");
+if (!skipDepsLib) await import("./deps");
 
 // --- App ---
 const appName = process.argv[2];

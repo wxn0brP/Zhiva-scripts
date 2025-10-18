@@ -32,3 +32,7 @@ else
     git -C $HOME/.zhiva/scripts pull
 fi
 echo "💜 Zhiva-scripts is installed."
+
+ln -s $HOME/.zhiva/scripts/zhiva/startup.ts $HOME/.zhiva/zhiva-startup
+chmod +x $HOME/.zhiva/zhiva-startup
+echo "💜 Zhiva-startup is installed."
