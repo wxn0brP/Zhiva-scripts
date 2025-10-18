@@ -24,3 +24,11 @@ if ! command -v git &> /dev/null; then
 else
     echo "💜 git is installed."
 fi
+
+mkdir -p $HOME/.zhiva
+if [ ! -d $HOME/.zhiva/scripts ]; then
+    git clone https://github.com/wxn0brP/Zhiva-scripts.git $HOME/.zhiva/scripts
+else
+    git -C $HOME/.zhiva/scripts pull
+fi
+echo "💜 Zhiva-scripts is installed."
