@@ -7,12 +7,15 @@ if (existsSync("node_modules/@wxn0brp/zhiva-base-lib")) {
         process.chdir("node_modules/@wxn0brp/zhiva-base-lib");
         await $`git pull`;
         await $`bun install`;
-    } catch { } finally {
+    } catch (e) {
+        console.error("Error updating Zhiva base-lib:", e);
+    } finally {
         process.chdir("../../..");
     }
 } else {
     await $`mkdir -p node_modules`;
     await $`git clone https://github.com/wxn0brP/Zhiva-base-lib.git node_modules/@wxn0brp/zhiva-base-lib`;
+    await $`cd node_modules/@wxn0brp/zhiva-base-lib && bun install`;
 }
 
 console.log("💜 Updating Zhiva scripts...");

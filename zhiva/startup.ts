@@ -32,7 +32,7 @@ if (!skipDepsLib) await import("./deps");
 // --- App ---
 const appName = process.argv[2];
 if (appName === "init") {
-    console.log("Init completed");
+    console.log("💜 Init completed");
     process.exit(0);
 }
 
