@@ -3,7 +3,7 @@
 import { $ } from "bun";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 
-const baseLink = `https://github.com/wxn0brP/Zhiva/releases/download/native/`;
+const baseLink = `https://github.com/wxn0brP/Zhiva-native/releases/download/native/`;
 const HOME = process.env.HOME;
 const zhivaPath = `${HOME}/.zhiva`;
 if (!existsSync(zhivaPath)) mkdirSync(zhivaPath);
