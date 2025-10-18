@@ -104,6 +104,7 @@ const bun = spawn(
         stdio: "inherit",
         env: {
             ...process.env,
+            SHIVA_ROOT: zhivaPath,
             NODE_PATH: nodePath
         }
     }
