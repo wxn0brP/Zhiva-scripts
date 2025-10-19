@@ -22,6 +22,7 @@ console.log("💜 Updating Zhiva scripts...");
 try {
     process.chdir("scripts");
     await $`git pull`;
+    await $`bun install --production`;
 } finally {
     process.chdir("..");
 }
