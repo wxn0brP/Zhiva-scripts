@@ -15,7 +15,7 @@ if (existsSync("node_modules/@wxn0brp/zhiva-base-lib")) {
 } else {
     await $`mkdir -p node_modules`;
     await $`git clone https://github.com/wxn0brP/Zhiva-base-lib.git node_modules/@wxn0brp/zhiva-base-lib`;
-    await $`cd node_modules/@wxn0brp/zhiva-base-lib && bun install`;
+    await $`cd node_modules/@wxn0brp/zhiva-base-lib && bun install --production`;
 }
 
 console.log("💜 Updating Zhiva scripts...");
