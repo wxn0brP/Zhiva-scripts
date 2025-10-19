@@ -1,7 +1,8 @@
 #!/usr/bin/env bun
 
 import { $ } from "bun";
-import { existsSync, mkdirSync } from "fs";
+import { existsSync, mkdirSync, readFileSync } from "fs";
+import { createDesktopFile } from "./desktop";
 
 let name = process.argv[2];
 if (!name) {
@@ -23,8 +24,26 @@ if (existsSync(name)) {
 }
 
 await $`bun install --production`;
-try {
+const pkg = JSON.parse(readFileSync("package.json", "utf-8"));
+if (pkg.scripts?.build) {
     await $`bun run build`;
-} catch (e) {
-    console.log(e);
+}
+
+const zhivaMeta = {
+    name,
+    icon: undefined as string,
+    desktop: ["share", "desktop"]
+};
+if (existsSync("zhiva.json")) {
+    Object.assign(zhivaMeta, JSON.parse(readFileSync("zhiva.json", "utf-8")));
+}
+
+if (zhivaMeta.desktop) {
+    if (process.platform === "linux" || process.platform === "darwin") {
+        for (const path of zhivaMeta.desktop) {
+            createDesktopFile({ name, path, icon: zhivaMeta?.icon });
+        }
+    } else {
+        console.error("Desktop files are not supported on this platform");
+    }
 }

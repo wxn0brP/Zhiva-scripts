@@ -2,7 +2,7 @@
 
 import { spawn } from "child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
-import { delimiter, isAbsolute, join, resolve } from "path";
+import { delimiter, dirname, isAbsolute, join, resolve } from "path";
 import { parseArgs } from "util";
 
 // --- Args ---
@@ -101,6 +101,8 @@ const nodePath = [
     resolve(appPath, "node_modules"),
     resolve(zhivaPath, "node_modules")
 ].join(delimiter);
+
+process.env.PATH = `${process.env.PATH}${delimiter}${join(HOME, ".bun/bin")}`;
 
 // --- Run Bun ---
 const bun = spawn(
