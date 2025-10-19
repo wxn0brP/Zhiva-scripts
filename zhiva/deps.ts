@@ -6,7 +6,7 @@ if (existsSync("node_modules/@wxn0brp/zhiva-base-lib")) {
     try {
         process.chdir("node_modules/@wxn0brp/zhiva-base-lib");
         await $`git pull`;
-        await $`bun install`;
+        await $`bun install --production`;
     } catch (e) {
         console.error("Error updating Zhiva base-lib:", e);
     } finally {
