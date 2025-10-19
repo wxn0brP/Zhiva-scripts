@@ -19,10 +19,12 @@ if (existsSync("node_modules/@wxn0brp/zhiva-base-lib")) {
 }
 
 console.log("💜 Updating Zhiva scripts...");
+const preCwd = process.cwd();
 try {
     process.chdir("scripts");
     await $`git pull`;
+    process.chdir("zhiva");
     await $`bun install --production`;
 } finally {
-    process.chdir("..");
+    process.chdir(preCwd);
 }
