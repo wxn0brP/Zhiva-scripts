@@ -11,7 +11,9 @@ export interface Opts {
 
 export function createDesktopFile(opts: Opts) {
     const bunPath = execSync("which bun").toString().trim();
-    const shortName = opts.appName || opts.name.split("/").pop();
+    let shortName = opts.appName || opts.name;
+    shortName = shortName.split("/").pop();
+
     const desktop = `
 [Desktop Entry]
 Type=Application
