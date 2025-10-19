@@ -41,7 +41,12 @@ if (existsSync("zhiva.json")) {
 if (zhivaMeta.desktop) {
     if (process.platform === "linux" || process.platform === "darwin") {
         for (const path of zhivaMeta.desktop) {
-            createDesktopFile({ name, path, icon: zhivaMeta?.icon });
+            createDesktopFile({
+                name,
+                appName: zhivaMeta.name,
+                path,
+                icon: zhivaMeta?.icon
+            });
         }
     } else {
         console.error("Desktop files are not supported on this platform");

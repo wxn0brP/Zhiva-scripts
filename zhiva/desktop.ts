@@ -4,13 +4,14 @@ import { join, resolve } from "path";
 
 export interface Opts {
     name: string;
+    appName?: string;
     icon?: string;
     path?: string;
 }
 
 export function createDesktopFile(opts: Opts) {
     const bunPath = execSync("which bun").toString().trim();
-    const shortName = opts.name.split("/").pop();
+    const shortName = opts.appName || opts.name.split("/").pop();
     const desktop = `
 [Desktop Entry]
 Type=Application
