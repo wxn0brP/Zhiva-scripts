@@ -3,6 +3,7 @@
 import { $ } from "bun";
 import { existsSync, mkdirSync, readFileSync } from "fs";
 import { createDesktopFile } from "./desktop";
+import { db } from "./db";
 
 let name = process.argv[2];
 if (!name) {
@@ -29,16 +30,19 @@ if (pkg.scripts?.build) {
     await $`bun run build`;
 }
 
+const updated = await db.updateOneOrAdd("apps", { name }, { updatedAt: Date.now() });
+
 const zhivaMeta = {
     name,
     icon: undefined as string,
     desktop: ["share", "desktop"]
 };
+
 if (existsSync("zhiva.json")) {
     Object.assign(zhivaMeta, JSON.parse(readFileSync("zhiva.json", "utf-8")));
 }
 
-if (zhivaMeta.desktop) {
+if (!updated && zhivaMeta.desktop) {
     if (process.platform === "linux" || process.platform === "darwin") {
         for (const path of zhivaMeta.desktop) {
             createDesktopFile({

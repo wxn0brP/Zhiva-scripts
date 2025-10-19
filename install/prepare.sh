@@ -31,6 +31,8 @@ if [ ! -d $HOME/.zhiva/scripts ]; then
 else
     git -C $HOME/.zhiva/scripts pull
 fi
+cd $HOME/.zhiva/scripts/zhiva
+bun install
 echo "💜 Zhiva-scripts is installed."
 
 ln -s $HOME/.zhiva/scripts/zhiva/startup.ts $HOME/.zhiva/bin/zhiva-startup
