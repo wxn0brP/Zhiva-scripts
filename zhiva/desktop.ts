@@ -1,5 +1,5 @@
 import { execSync } from "child_process";
-import { chmodSync, writeFileSync } from "fs";
+import { chmodSync, existsSync, mkdirSync, writeFileSync } from "fs";
 import { join, resolve } from "path";
 
 export interface Opts {
@@ -9,10 +9,14 @@ export interface Opts {
     path?: string;
 }
 
+function getShortName(opts: Opts) {
+    let name = opts.appName || opts.name;
+    return name.split("/").pop();
+}
+
 export function createDesktopFile(opts: Opts) {
     const bunPath = execSync("which bun").toString().trim();
-    let shortName = opts.appName || opts.name;
-    shortName = shortName.split("/").pop();
+    const shortName = getShortName(opts);
 
     const desktop = `
 [Desktop Entry]
@@ -34,5 +38,61 @@ ${opts.icon && `Icon=${resolve(opts.icon)}`}
     const filePath = join(path, `${shortName}.desktop`);
     writeFileSync(filePath, desktop);
     chmodSync(filePath, 0o755);
-    console.log(`💜 Desktop file created at ${filePath}`);
+    return filePath;
+}
+
+export function createLnkFile(opts: Opts) {
+    const shortName = getShortName(opts);
+    const bunPath = execSync("where bun").toString().trim();
+
+    let path = opts.path || "desktop";
+    switch (path) {
+        case "share":
+            path = join(
+                process.env.APPDATA!,
+                "Microsoft",
+                "Windows",
+                "Start Menu",
+                "Programs"
+            );
+            break;
+        case "desktop":
+            path = join(process.env.USERPROFILE!, "Desktop");
+            break;
+        default:
+            path = resolve(path);
+    }
+
+    if (!existsSync(path)) mkdirSync(path, { recursive: true });
+
+    const shortcutPath = join(path, `${shortName}.lnk`);
+    const iconPath = opts.icon ? resolve(opts.icon) : "";
+
+    const ps = `
+$WshShell = New-Object -ComObject WScript.Shell;
+$Shortcut = $WshShell.CreateShortcut('${shortcutPath}');
+$Shortcut.TargetPath = '${bunPath}';
+$Shortcut.Arguments = 'run "${process.env.USERPROFILE}\\.zhiva\\bin\\zhiva-startup" ${opts.name}';
+${iconPath ? `$Shortcut.IconLocation = '${iconPath}';` : ""}
+$Shortcut.Save();
+`.trim().split("\n").join(" ");
+    execSync(`powershell -NoProfile -ExecutionPolicy Bypass -Command "${ps}"`);
+    return shortcutPath;
+}
+
+
+export function createShortCut(opts: Opts) {
+    let path: string;
+    switch (process.platform) {
+        case "linux":
+            path = createDesktopFile(opts);
+            break;
+        case "win32":
+            path = createLnkFile(opts);
+            break;
+        default:
+            console.error("💔 Shortcuts are not supported on this platform");
+    }
+    if (path)
+        console.log(`💜 Shortcut created at ${path}`);
 }
