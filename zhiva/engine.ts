@@ -13,7 +13,9 @@ export async function checkEngine() {
         }
 
         console.log("[Z-SCR-4-02] Downloading Zhiva...");
-        await $`curl -L ${baseLink}zhiva-${platform} -o zhiva`;
+        const zhivaServer = `zhiva-${platform}${platform === "win32" ? ".exe" : ""}`;
+        const zhivaLocal = `zhiva${platform === "win32" ? ".exe" : ""}`;
+        await $`curl -L ${baseLink}${zhivaServer} -o ${zhivaLocal}`;
         writeFileSync(nv, serverVersion);
         if (platform !== "win32") await $`chmod +x zhiva`;
     } catch (e) {
