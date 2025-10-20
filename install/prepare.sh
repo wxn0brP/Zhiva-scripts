@@ -1,28 +1,28 @@
 #!/bin/bash
 
 if ! command -v bun &> /dev/null; then
-    echo "bun is not installed."
+    echo "[Z-SCR-5-01] bun is not installed."
     read -p "Do you want to install bun? (y/n): " choice
     if [[ "$choice" =~ ^[Yy]$ ]]; then
-        echo "Installing bun..."
+        echo "[Z-SCR-5-02] Installing bun..."
         curl -fsSL https://bun.sh/install | bash
 
         export PATH="$HOME/.bun/bin:$PATH"
-        echo "Added ~/.bun/bin to PATH for current session."
-        echo "💜 Don't forget to add 'export PATH=\"\$HOME/.bun/bin:\$PATH\"' to your ~/.bashrc or ~/.zshrc."
+        echo "[Z-SCR-5-03] Added ~/.bun/bin to PATH for current session."
+        echo "[Z-SCR-5-04] 💜 Don't forget to add 'export PATH=\"\$HOME/.bun/bin:\$PATH\"' to your ~/.bashrc or ~/.zshrc."
     else
-        echo "Skipped bun installation."
+        echo "[Z-SCR-5-05] Skipped bun installation."
         exit 1
     fi
 else
-    echo "💜 bun is installed."
+    echo "[Z-SCR-5-06] 💜 bun is installed."
 fi
 
 if ! command -v git &> /dev/null; then
-    echo "Error: git is not installed. Please install git manually."
+    echo "[Z-SCR-5-07] Error: git is not installed. Please install git manually."
     exit 1
 else
-    echo "💜 git is installed."
+    echo "[Z-SCR-5-08] 💜 git is installed."
 fi
 
 mkdir -p $HOME/.zhiva/bin
@@ -33,10 +33,10 @@ else
 fi
 cd $HOME/.zhiva/scripts/zhiva
 bun install --production --force
-echo "💜 Zhiva-scripts is installed."
+echo "[Z-SCR-5-09] 💜 Zhiva-scripts is installed."
 
 ln -s $HOME/.zhiva/scripts/zhiva/startup.ts $HOME/.zhiva/bin/zhiva-startup
 ln -s $HOME/.zhiva/scripts/zhiva/install.ts $HOME/.zhiva/bin/zhiva-install
 chmod +x $HOME/.zhiva/bin/*
 
-echo "💜 Zhiva-startup is installed."
+echo "[Z-SCR-5-10] 💜 Zhiva-startup is installed."
