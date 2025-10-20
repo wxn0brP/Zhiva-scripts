@@ -9,10 +9,10 @@ export async function checkEngine() {
     try {
         const serverVersion = await fetch(baseLink + nv).then(res => res.text());
         if (existsSync(nv) && readFileSync(nv, "utf-8").trim() === serverVersion.trim()) {
-            return console.log("Zhiva is up to date");
+            return console.log("[Z-SCR-4-01] Zhiva is up to date");
         }
 
-        console.log("Downloading Zhiva...");
+        console.log("[Z-SCR-4-02] Downloading Zhiva...");
         await $`curl -L ${baseLink}zhiva-${platform} -o zhiva`;
         writeFileSync(nv, serverVersion);
         if (platform !== "win32") await $`chmod +x zhiva`;
@@ -22,5 +22,5 @@ export async function checkEngine() {
     }
 }
 
-console.log("💜 Updating Zhiva engine...");
+console.log("[Z-SCR-4-03] 💜 Updating Zhiva engine...");
 await checkEngine();

@@ -94,5 +94,5 @@ export function createShortCut(opts: Opts) {
             console.error("💔 Shortcuts are not supported on this platform");
     }
     if (path)
-        console.log(`💜 Shortcut created at ${path}`);
+        console.log(`[Z-SCR-1-01] 💜 Shortcut created at ${path}`);
 }

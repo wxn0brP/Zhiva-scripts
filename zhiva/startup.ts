@@ -2,7 +2,7 @@
 
 import { spawn } from "child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
-import { delimiter, dirname, isAbsolute, join, resolve } from "path";
+import { delimiter, isAbsolute, join, resolve } from "path";
 import { parseArgs } from "util";
 
 // --- Args ---
@@ -16,7 +16,7 @@ const { values, positionals } = parseArgs({
 });
 
 if (values.help) {
-    console.log(`
+    console.log(`[Z-SCR-2-01]
 Usage: zhiva-startup [options] <app-name>
 
 Options:
@@ -55,11 +55,11 @@ async function handleComponent(name: string) {
     const doCheck = shouldCheck(mode, latestCheck);
 
     if (!doCheck) {
-        console.log(`[${name}] skipped (mode ${mode})`);
+        console.log(`[Z-SCR-2-02] [${name}] skipped (mode ${mode})`);
         return;
     }
 
-    console.log(`[${name}] updating (mode ${mode})...`);
+    console.log(`[Z-SCR-2-03] [${name}] updating (mode ${mode})...`);
     await import("./" + name);
 
     if (lastCheckWrite) return;
@@ -74,7 +74,7 @@ await handleComponent("deps");
 // --- App ---
 let appName = positionals[0];
 if (appName === "init") {
-    console.log("💜 Init completed");
+    console.log("[Z-SCR-2-04] 💜 Init completed");
     process.exit(0);
 }
 
