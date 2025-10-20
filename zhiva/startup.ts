@@ -2,6 +2,7 @@
 
 import { spawn } from "child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
+import { homedir } from "os";
 import { delimiter, isAbsolute, join, resolve } from "path";
 import { parseArgs } from "util";
 
@@ -33,7 +34,7 @@ Mode:
 }
 
 // --- Paths ---
-const HOME = process.env.HOME ?? process.env.USERPROFILE;
+const HOME = homedir();
 const zhivaPath = join(HOME, ".zhiva");
 if (!existsSync(zhivaPath)) mkdirSync(zhivaPath, { recursive: true });
 process.chdir(zhivaPath);

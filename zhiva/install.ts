@@ -4,6 +4,7 @@ import { $ } from "bun";
 import { existsSync, mkdirSync, readFileSync } from "fs";
 import { createDesktopFile } from "./desktop";
 import { db } from "./db";
+import { homedir } from "os";
 
 let name = process.argv[2];
 if (!name) {
@@ -12,7 +13,7 @@ if (!name) {
 }
 if (!name.includes("/")) name = `wxn0brP/${name}`;
 
-process.chdir(`${process.env.HOME ?? process.env.USERPROFILE}/.zhiva`);
+process.chdir(`${homedir()}/.zhiva`);
 if (!existsSync("apps")) mkdirSync("apps", { recursive: true });
 process.chdir("apps");
 

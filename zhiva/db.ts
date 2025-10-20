@@ -1,5 +1,6 @@
 import { Valthera } from "@wxn0brp/db";
 import { createLock } from "@wxn0brp/db-lock";
+import { homedir } from "os";
 
-const dbPath = (process.env.HOME ?? process.env.USERPROFILE) + "/.zhiva/master.db";
+const dbPath = homedir() + "/.zhiva/master.db";
 export const db = createLock(new Valthera(dbPath));

@@ -1,5 +1,6 @@
 import { execSync } from "child_process";
 import { chmodSync, existsSync, mkdirSync, writeFileSync } from "fs";
+import { homedir } from "os";
 import { join, resolve } from "path";
 
 export interface Opts {
@@ -57,7 +58,7 @@ export function createLnkFile(opts: Opts) {
             );
             break;
         case "desktop":
-            path = join(process.env.USERPROFILE!, "Desktop");
+            path = join(homedir(), "Desktop");
             break;
         default:
             path = resolve(path);
