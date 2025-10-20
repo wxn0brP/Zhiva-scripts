@@ -10,7 +10,7 @@ if (!existsSync("node_modules/@wxn0brp/zhiva-base-lib")) {
 try {
     process.chdir("node_modules/@wxn0brp/zhiva-base-lib");
     await $`git pull`;
-    await $`bun install --production`;
+    await $`bun install --production --force`;
 } catch (e) {
     console.error("Error updating Zhiva base-lib:", e);
 } finally {
@@ -23,7 +23,7 @@ try {
     process.chdir("scripts");
     await $`git pull`;
     process.chdir("zhiva");
-    await $`bun install --production`;
+    await $`bun install --production --force`;
 } finally {
     process.chdir(preCwd);
 }

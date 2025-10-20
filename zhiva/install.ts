@@ -24,7 +24,7 @@ if (existsSync(name)) {
     process.chdir(name);
 }
 
-await $`bun install --production`;
+await $`bun install --production --force`;
 const pkg = JSON.parse(readFileSync("package.json", "utf-8"));
 if (pkg.scripts?.build) {
     await $`bun run build`;
