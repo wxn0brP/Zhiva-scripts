@@ -1,21 +1,20 @@
 import { $ } from "bun";
-import { existsSync } from "fs";
+import { existsSync, mkdirSync } from "fs";
 
 console.log("💜 Updating Zhiva base-lib...");
-if (existsSync("node_modules/@wxn0brp/zhiva-base-lib")) {
-    try {
-        process.chdir("node_modules/@wxn0brp/zhiva-base-lib");
-        await $`git pull`;
-        await $`bun install --production`;
-    } catch (e) {
-        console.error("Error updating Zhiva base-lib:", e);
-    } finally {
-        process.chdir("../../..");
-    }
-} else {
-    await $`mkdir -p node_modules`;
+if (!existsSync("node_modules/@wxn0brp/zhiva-base-lib")) {
+    mkdirSync("node_modules/@wxn0brp", { recursive: true });
     await $`git clone https://github.com/wxn0brP/Zhiva-base-lib.git node_modules/@wxn0brp/zhiva-base-lib`;
-    await $`cd node_modules/@wxn0brp/zhiva-base-lib && bun install --production`;
+}
+
+try {
+    process.chdir("node_modules/@wxn0brp/zhiva-base-lib");
+    await $`git pull`;
+    await $`bun install --production`;
+} catch (e) {
+    console.error("Error updating Zhiva base-lib:", e);
+} finally {
+    process.chdir("../../..");
 }
 
 console.log("💜 Updating Zhiva scripts...");
@@ -28,3 +27,4 @@ try {
 } finally {
     process.chdir(preCwd);
 }
+console.log("💜 Update dependencies completed");
