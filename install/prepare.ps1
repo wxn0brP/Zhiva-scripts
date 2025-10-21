@@ -37,7 +37,17 @@ Set-Location (Join-Path $zhivaScriptsPath "zhiva")
 bun install --production --force
 Write-Host "[Z-SCR-6-09] 💜 Zhiva-scripts is installed."
 
-New-Item -ItemType SymbolicLink -Path (Join-Path $zhivaBinPath "zhiva-startup") -Target (Join-Path $zhivaScriptsPath "zhiva/startup.ts") -Force | Out-Null
-New-Item -ItemType SymbolicLink -Path (Join-Path $zhivaBinPath "zhiva-install") -Target (Join-Path $zhivaScriptsPath "zhiva/install.ts") -Force | Out-Null
+$cmdContentStartup = @"
+@echo off
+bun run "%USERPROFILE%\.zhiva\scripts\zhiva\startup.ts" %*
+"@
+
+$cmdContentInstall = @"
+@echo off
+bun run "%USERPROFILE%\.zhiva\scripts\zhiva\install.ts" %*
+"@
+
+$cmdContentStartup | Set-Content -Path (Join-Path $zhivaBinPath "zhiva-startup.cmd") -Force
+$cmdContentInstall | Set-Content -Path (Join-Path $zhivaBinPath "zhiva-install.cmd") -Force
 
 Write-Host "[Z-SCR-6-10] 💜 Zhiva-startup is installed."
