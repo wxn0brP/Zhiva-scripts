@@ -2,9 +2,9 @@
 
 import { $ } from "bun";
 import { existsSync, mkdirSync, readFileSync } from "fs";
-import { createDesktopFile } from "./desktop";
-import { db } from "./db";
 import { homedir } from "os";
+import { db } from "./db";
+import { createShortCut } from "./desktop";
 
 let name = process.argv[2];
 if (!name) {
@@ -46,7 +46,7 @@ if (existsSync("zhiva.json")) {
 if (!updated && zhivaMeta.desktop) {
     if (process.platform === "linux" || process.platform === "darwin") {
         for (const path of zhivaMeta.desktop) {
-            createDesktopFile({
+            createShortCut({
                 name,
                 appName: zhivaMeta.name,
                 path,
