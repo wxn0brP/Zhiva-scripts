@@ -44,16 +44,12 @@ if (existsSync("zhiva.json")) {
 }
 
 if (!updated && zhivaMeta.desktop) {
-    if (process.platform === "linux" || process.platform === "darwin") {
-        for (const path of zhivaMeta.desktop) {
-            createShortCut({
-                name,
-                appName: zhivaMeta.name,
-                path,
-                icon: zhivaMeta?.icon
-            });
-        }
-    } else {
-        console.error("Desktop files are not supported on this platform");
+    for (const path of zhivaMeta.desktop) {
+        createShortCut({
+            name,
+            appName: zhivaMeta.name,
+            path,
+            icon: zhivaMeta?.icon
+        });
     }
 }

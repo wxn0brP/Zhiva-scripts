@@ -81,18 +81,18 @@ $Shortcut.Save();
     return shortcutPath;
 }
 
-
 export function createShortCut(opts: Opts) {
     let path: string;
     switch (process.platform) {
         case "linux":
+        case "darwin":
             path = createDesktopFile(opts);
             break;
         case "win32":
             path = createLnkFile(opts);
             break;
         default:
-            console.error("💔 Shortcuts are not supported on this platform");
+            console.error("[Z-SCR-1-02] 💔 Shortcuts are not supported on this platform");
     }
     if (path)
         console.log(`[Z-SCR-1-01] 💜 Shortcut created at ${path}`);
