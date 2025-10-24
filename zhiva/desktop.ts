@@ -24,7 +24,7 @@ export function createDesktopFile(opts: Opts) {
 Type=Application
 Name=${shortName}
 Exec=${bunPath} run ${process.env.HOME}/.zhiva/bin/zhiva-startup ${opts.name}
-${opts.icon && `Icon=${resolve(opts.icon)}`}
+${opts.icon ? `Icon=${resolve(opts.icon)}` : ""}
 `.trim();
     let path = opts.path || "share";
     switch (path) {
