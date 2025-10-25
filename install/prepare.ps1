@@ -2,8 +2,10 @@ if (-not (Get-Command bun -ErrorAction SilentlyContinue)) {
     Write-Host "[Z-SCR-6-01] bun is not installed."
     irm https://bun.sh/install.ps1 | iex
     $env:Path += ";$HOME\.bun\bin"
-    Write-Host "[Z-SCR-6-02] Added ~/.bun/bin to PATH for current session."
-    Write-Host "[Z-SCR-6-03] 💜 Don't forget to add '$HOME\.bun\bin' to your PATH environment variable."
+    Write-Host "[Z-SCR-6-02] Added ~/.bun/bin to PATH."
+    $BunPath = "$env:USERPROFILE\.bun\bin"
+    $env:PATH += ";$BunPath"
+    [Environment]::SetEnvironmentVariable("PATH", $env:PATH, "User")
 } else {
     Write-Host "[Z-SCR-6-04] 💜 bun is installed."
 }
