@@ -7,6 +7,7 @@ export interface Opts {
     name: string;
     appName?: string;
     icon?: string;
+    win_icon?: string;
     path?: string;
 }
 
@@ -67,7 +68,7 @@ export function createLnkFile(opts: Opts) {
     if (!existsSync(path)) mkdirSync(path, { recursive: true });
 
     const shortcutPath = join(path, `${shortName}.lnk`);
-    const iconPath = opts.icon ? resolve(opts.icon) : "";
+    const iconPath = opts.win_icon ? resolve(opts.win_icon) : "";
 
     const ps = `
 $WshShell = New-Object -ComObject WScript.Shell;

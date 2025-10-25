@@ -36,6 +36,7 @@ const updated = await db.updateOneOrAdd("apps", { name }, { updatedAt: Date.now(
 const zhivaMeta = {
     name,
     icon: undefined as string,
+    win_icon: undefined as string,
     desktop: ["share", "desktop"]
 };
 
@@ -49,7 +50,8 @@ if (!updated && zhivaMeta.desktop && zhivaMeta.desktop.length) {
             name,
             appName: zhivaMeta.name,
             path,
-            icon: zhivaMeta?.icon
+            icon: zhivaMeta?.icon,
+            win_icon: zhivaMeta?.win_icon,
         });
     }
 }
