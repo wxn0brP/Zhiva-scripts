@@ -1,11 +1,9 @@
 if (-not (Get-Command bun -ErrorAction SilentlyContinue)) {
     Write-Host "[Z-SCR-6-01] bun is not installed."
     irm https://bun.sh/install.ps1 | iex
-    $env:Path += ";$HOME\.bun\bin"
-    Write-Host "[Z-SCR-6-02] Added ~/.bun/bin to PATH."
-    $BunPath = "$env:USERPROFILE\.bun\bin"
-    $env:PATH += ";$BunPath"
+    $env:PATH += ";$USERPROFILE\.bun\bin"
     [Environment]::SetEnvironmentVariable("PATH", $env:PATH, "User")
+    Write-Host "[Z-SCR-6-02] Added ~/.bun/bin to PATH."
 } else {
     Write-Host "[Z-SCR-6-04] 💜 bun is installed."
 }
@@ -45,4 +43,8 @@ bun run "%USERPROFILE%\.zhiva\scripts\zhiva\install.ts" %*
 $cmdContentStartup | Set-Content -Path (Join-Path $zhivaBinPath "zhiva-startup.cmd") -Force
 $cmdContentInstall | Set-Content -Path (Join-Path $zhivaBinPath "zhiva-install.cmd") -Force
 
-Write-Host "[Z-SCR-6-08] 💜 Zhiva-startup is installed."
+Write-Host "[Z-SCR-6-08] Adding Zhiva to PATH."
+$env:Path += ";$zhivaBinPath"
+[Environment]::SetEnvironmentVariable("PATH", $env:PATH, "User")
+
+Write-Host "[Z-SCR-6-09] 💜 Zhiva-startup is installed."
