@@ -24,7 +24,7 @@ export function createDesktopFile(opts: Opts) {
 [Desktop Entry]
 Type=Application
 Name=${shortName}
-Exec=${bunPath} run ${process.env.HOME}/.zhiva/bin/zhiva-startup ${opts.name}
+Exec=${bunPath} run ${process.env.HOME}/.zhiva/bin/zhiva start ${opts.name}
 ${opts.icon ? `Icon=${resolve(opts.icon)}` : ""}
 `.trim();
     let path = opts.path || "share";
@@ -74,7 +74,7 @@ export function createLnkFile(opts: Opts) {
 $WshShell = New-Object -ComObject WScript.Shell;
 $Shortcut = $WshShell.CreateShortcut('${shortcutPath}');
 $Shortcut.TargetPath = '${bunPath}';
-$Shortcut.Arguments = 'run "${process.env.USERPROFILE}\\.zhiva\\bin\\zhiva-startup" ${opts.name}';
+$Shortcut.Arguments = 'run "${process.env.USERPROFILE}\\.zhiva\\bin\\zhiva start" ${opts.name}';
 ${iconPath ? `$Shortcut.IconLocation = '${iconPath}';` : ""}
 $Shortcut.Save();
 `.trim().split("\n").join(" ");
