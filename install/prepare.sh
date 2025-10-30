@@ -35,8 +35,7 @@ cd $HOME/.zhiva/scripts/zhiva
 bun install --production --force
 echo "[Z-SCR-5-09] 💜 Zhiva-scripts is installed."
 
-ln -s $HOME/.zhiva/scripts/zhiva/startup.ts $HOME/.zhiva/bin/zhiva-startup
-ln -s $HOME/.zhiva/scripts/zhiva/install.ts $HOME/.zhiva/bin/zhiva-install
+ln -s $HOME/.zhiva/scripts/zhiva/src/cli.ts $HOME/.zhiva/bin/zhiva
 chmod +x $HOME/.zhiva/bin/*
 
-echo "[Z-SCR-5-10] 💜 Zhiva-startup is installed."
+echo "[Z-SCR-5-10] 💜 Zhiva command is installed."

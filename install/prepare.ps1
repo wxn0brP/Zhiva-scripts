@@ -29,21 +29,15 @@ Set-Location (Join-Path $zhivaScriptsPath "zhiva")
 bun install --production --force
 Write-Host "[Z-SCR-6-07] 💜 Zhiva-scripts is installed."
 
-$cmdContentStartup = @"
+$cmdContent = @"
 @echo off
-bun run "%USERPROFILE%\.zhiva\scripts\zhiva\startup.ts" %*
+bun run "%USERPROFILE%\.zhiva\scripts\zhiva\src\cli.ts" %*
 "@
 
-$cmdContentInstall = @"
-@echo off
-bun run "%USERPROFILE%\.zhiva\scripts\zhiva\install.ts" %*
-"@
-
-$cmdContentStartup | Set-Content -Path (Join-Path $zhivaBinPath "zhiva-startup.cmd") -Force
-$cmdContentInstall | Set-Content -Path (Join-Path $zhivaBinPath "zhiva-install.cmd") -Force
+$cmdContent | Set-Content -Path (Join-Path $zhivaBinPath "zhiva.cmd") -Force
 
 Write-Host "[Z-SCR-6-08] Adding Zhiva to PATH."
 $env:Path += ";$zhivaBinPath"
 [Environment]::SetEnvironmentVariable("PATH", $env:PATH, "User")
 
-Write-Host "[Z-SCR-6-09] 💜 Zhiva-startup is installed."
+Write-Host "[Z-SCR-6-09] 💜 Zhiva command is installed."
