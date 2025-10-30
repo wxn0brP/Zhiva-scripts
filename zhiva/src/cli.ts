@@ -10,6 +10,7 @@ const aliases = {
     start: ["run", "startup", "o", "r"],
     install: ["i", "add"],
     uninstall: ["rm", "remove"],
+    list: ["l", "ls"],
     help: ["h"],
 }
 

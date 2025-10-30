@@ -11,6 +11,7 @@ Commands:
   start <app-name>           Start an application
   install <app-name>         Install an application from a GitHub repository
   uninstall <app-name>       Uninstall an installed application
+  list                       List installed applications
   help                       Show this help message
 
 --------------------------------------------------
@@ -41,4 +42,7 @@ Command Details:
     Examples:
       zhiva uninstall Zhiva-store-app
       zhiva uninstall username/repo
+
+  list                       List installed applications
+    Aliases:  l, ls
 `.trimStart());
