@@ -61,7 +61,7 @@ async function handleComponent(name: string) {
     }
 
     console.log(`[Z-SCR-2-03] [${name}] updating (mode ${mode})...`);
-    await import("./" + name);
+    await import("./utils/" + name);
 
     if (lastCheckWrite) return;
     lastCheckWrite = true;

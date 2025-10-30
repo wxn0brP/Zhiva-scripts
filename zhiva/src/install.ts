@@ -3,8 +3,8 @@
 import { $ } from "bun";
 import { existsSync, mkdirSync, readFileSync } from "fs";
 import { homedir } from "os";
-import { db } from "./db";
-import { createShortCut } from "./desktop";
+import { db } from "./utils/db";
+import { createShortCut } from "./utils/desktop";
 
 let name = process.argv[2];
 if (!name) {

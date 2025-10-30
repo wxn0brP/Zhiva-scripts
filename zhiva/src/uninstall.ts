@@ -3,7 +3,7 @@
 import { existsSync } from "fs";
 import { rm } from "fs/promises";
 import { homedir } from "os";
-import { db } from "./db";
+import { db } from "./utils/db";
 
 let name = process.argv[2];
 if (!name) {
