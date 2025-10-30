@@ -2,14 +2,15 @@
 
 let name = process.argv[2];
 if (!name) {
-    console.error("Please provide an module name");
-    process.exit(1);
+    name = "help";
 }
 process.argv.splice(2, 1);
 
 const aliases = {
     start: ["run", "startup", "o", "r"],
     install: ["i", "add"],
+    uninstall: ["rm", "remove"],
+    help: ["h"],
 }
 
 for (const key of Object.keys(aliases)) {
@@ -17,6 +18,12 @@ for (const key of Object.keys(aliases)) {
         name = key;
         break;
     }
+}
+
+const knownCommands = Object.keys(aliases);
+if (!knownCommands.includes(name)) {
+    console.error(`Unknown command: ${name}`);
+    name = "help";
 }
 
 await import("./" + name);
