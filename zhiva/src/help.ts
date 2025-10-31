@@ -12,6 +12,8 @@ Commands:
   install <app-name>         Install an application from a GitHub repository
   uninstall <app-name>       Uninstall an installed application
   list                       List installed applications
+  open <link>                Open an application in the browser
+  update                     Update Zhiva
   help                       Show this help message
 
 --------------------------------------------------
@@ -45,4 +47,14 @@ Command Details:
 
   list                       List installed applications
     Aliases:  l, ls
+
+  open <link>                Open an application in the browser
+    Aliases:  link
+
+    Examples:
+      zhiva open https://github.com/wxn0brP/Zhiva-store-app
+      zhiva link https://wxn0brp.github.io
+
+  update                     Update Zhiva
+    Aliases:  u, up
 `.trimStart());
