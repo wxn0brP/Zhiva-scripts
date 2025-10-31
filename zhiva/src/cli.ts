@@ -11,6 +11,7 @@ const aliases = {
     install: ["i", "add"],
     uninstall: ["rm", "remove"],
     list: ["l", "ls"],
+    open: ["link"],
     help: ["h"],
 }
 
