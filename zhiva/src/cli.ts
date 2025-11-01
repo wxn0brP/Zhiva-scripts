@@ -13,6 +13,7 @@ const aliases = {
     list: ["l", "ls"],
     open: ["link"],
     update: ["u", "up"],
+    self: ["update-self", "self-update"],
     help: ["h"],
 }
 

@@ -13,7 +13,8 @@ Commands:
   uninstall <app-name>       Uninstall an installed application
   list                       List installed applications
   open <link>                Open an application in the browser
-  update                     Update Zhiva
+  self                       Update Zhiva
+  update                     Update Zhiva applications
   help                       Show this help message
 
 --------------------------------------------------
@@ -55,6 +56,13 @@ Command Details:
       zhiva open https://github.com/wxn0brP/Zhiva-store-app
       zhiva link https://wxn0brp.github.io
 
-  update                     Update Zhiva
+  self                       Update Zhiva
+    Aliases:  update-self, self-update
+
+  update                     Update Zhiva applications
     Aliases:  u, up
+
+    Examples:
+      zhiva update
+      zhiva update try       Return a list of apps that need updates
 `.trimStart());
