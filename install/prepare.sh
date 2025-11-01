@@ -31,7 +31,8 @@ if [ ! -d $HOME/.zhiva/scripts ]; then
 else
     git -C $HOME/.zhiva/scripts pull
 fi
-cd $HOME/.zhiva/scripts/zhiva
+cp $HOME/.zhiva/scripts/zhiva/package.json $HOME/.zhiva/package.json
+cd $HOME/.zhiva
 bun install --production --force
 echo "[Z-SCR-5-09] 💜 Zhiva-scripts is installed."
 
