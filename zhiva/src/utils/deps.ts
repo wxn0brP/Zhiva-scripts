@@ -1,5 +1,6 @@
 import { $ } from "bun";
 import { existsSync, mkdirSync } from "fs";
+import { copyPkgToReqMods, installReqMods } from "./npm";
 
 console.log("[Z-SCR-3-01] 💜 Updating Zhiva base-lib...");
 if (!existsSync("node_modules/@wxn0brp/zhiva-base-lib")) {
@@ -7,24 +8,25 @@ if (!existsSync("node_modules/@wxn0brp/zhiva-base-lib")) {
     await $`git clone https://github.com/wxn0brP/Zhiva-base-lib.git node_modules/@wxn0brp/zhiva-base-lib`;
 }
 
+const cwd = process.cwd();
 try {
     process.chdir("node_modules/@wxn0brp/zhiva-base-lib");
     await $`git pull`;
-    await $`bun install --production --force`;
+    copyPkgToReqMods("zhiva-base-lib");
 } catch (e) {
     console.error("Error updating Zhiva base-lib:", e);
 } finally {
-    process.chdir("../../..");
+    process.chdir(cwd);
 }
 
 console.log("[Z-SCR-3-02] 💜 Updating Zhiva scripts...");
-const preCwd = process.cwd();
 try {
     process.chdir("scripts");
     await $`git pull`;
     process.chdir("zhiva");
-    await $`bun install --production --force`;
+    copyPkgToReqMods("zhiva-scripts");
 } finally {
-    process.chdir(preCwd);
+    process.chdir(cwd);
 }
+await installReqMods();
 console.log("[Z-SCR-3-03] 💜 Update dependencies completed");
