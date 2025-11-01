@@ -34,6 +34,7 @@ Mode:
 }
 
 // --- Paths ---
+const originalPath = process.cwd();
 const HOME = homedir();
 const zhivaPath = join(HOME, ".zhiva");
 if (!existsSync(zhivaPath)) mkdirSync(zhivaPath, { recursive: true });
@@ -86,6 +87,7 @@ if (!appName) {
 
 let appPath = "";
 if (isAbsolute(appName)) appPath = appName;
+else if (appName === ".") appPath = originalPath;
 else {
     appName = appName.includes("/") ? appName : `wxn0brP/${appName}`;
     appPath = join(zhivaPath, "apps", appName);
