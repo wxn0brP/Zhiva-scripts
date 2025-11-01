@@ -15,27 +15,38 @@ const dir = join(zhivaDir, "req-mods");
 if (!existsSync(zhivaDir)) mkdirSync(zhivaDir);
 if (!existsSync(dir)) mkdirSync(dir);
 
+function normalizeVersion(v: string): string {
+    return v
+        .trim()
+        .replace(/^[\^~><=\s*v]+/, "")
+        .split(/[-+]/)[0];
+}
+
+function isSemver(v: string): boolean {
+    return /^\d+(\.\d+){0,2}$/.test(normalizeVersion(v));
+}
+
 function compareVersions(a: string, b: string): number {
-    const pa = a.split(".").map(n => parseInt(n, 10));
-    const pb = b.split(".").map(n => parseInt(n, 10));
+    const pa = normalizeVersion(a).split(".").map(n => parseInt(n, 10) || 0);
+    const pb = normalizeVersion(b).split(".").map(n => parseInt(n, 10) || 0);
     const len = Math.max(pa.length, pb.length);
     for (let i = 0; i < len; i++) {
-        const na = pa[i] ?? 0;
-        const nb = pb[i] ?? 0;
-        if (na > nb) return 1;
-        if (na < nb) return -1;
+        if (pa[i] > pb[i]) return 1;
+        if (pa[i] < pb[i]) return -1;
     }
     return 0;
+}
+
+function isSpecial(v: string): boolean {
+    return /^(git\+|file:|github:|workspace:|http|https)/.test(v);
 }
 
 export function copyPkgToReqMods(name: string, file = "package.json") {
     const pkg = JSON.parse(readFileSync(file, "utf-8"));
     const deps = Object.assign({}, pkg.dependencies || {}, pkg.peerDependencies || {});
-
     const lines = Object.entries(deps)
         .map(([dep, version]) => `${dep},${version}`)
         .join("\n");
-
     writeFileSync(`${dir}/${name}`, lines);
 }
 
@@ -69,9 +80,24 @@ export async function installReqMods() {
                 continue;
             }
 
-            if (compareVersions(version, existing) > 0) {
+            const specialA = isSpecial(existing);
+            const specialB = isSpecial(version);
+            if (specialA && !specialB) {
                 deps[name] = version;
+                continue;
             }
+            if (!specialA && specialB) {
+                continue;
+            }
+
+            if (isSemver(version) && isSemver(existing)) {
+                if (compareVersions(version, existing) > 0) {
+                    deps[name] = version;
+                }
+                continue;
+            }
+
+            deps[name] = version;
         }
     }
 
