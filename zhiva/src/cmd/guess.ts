@@ -7,8 +7,13 @@ const name = (process.argv[2] || "").trim();
 const pkgs = await db.find("apps");
 const names = pkgs.map((pkg) => pkg.name);
 
+const all = names;
+for (const pkg of names)
+    if (pkg.startsWith("wxn0brP/"))
+        all.push(pkg.replace("wxn0brP/", ""));
+
 if (!name) {
-    process.stdout.write(names.join("\n"));
+    process.stdout.write(all.join("\n"));
     process.exit(0);
 }
 
@@ -24,7 +29,7 @@ const fuzzyMatch = (query: string, text: string) => {
     return false;
 }
 
-const filtered = names
+const filtered = all
     .filter((n) => fuzzyMatch(name, n))
     .sort((a, b) => a.length - b.length);
 
