@@ -1,0 +1,94 @@
+#compdef zhiva
+
+_zhiva() {
+  local -a subcommands
+  local -A aliases
+  local cur cmd
+
+  subcommands=(
+    'start:Start a Zhiva application'
+    'install:Install an application'
+    'uninstall:Uninstall an application'
+    'list:List installed applications'
+    'open:Open an application in the browser'
+    'self:Update Zhiva itself'
+    'update:Update installed applications'
+    'guess:Find app by name (fuzzy)'
+    'help:Show help message'
+  )
+
+  aliases=(
+    [run]=start [startup]=start [o]=start [r]=start
+    [i]=install [add]=install
+    [rm]=uninstall [remove]=uninstall
+    [l]=list [ls]=list
+    [link]=open
+    [update-self]=self [self-update]=self
+    [u]=update [up]=update
+    [find]=guess
+  )
+
+  cur=${words[CURRENT]}
+
+  if (( CURRENT == 2 )); then
+    _describe 'command' subcommands
+    return
+  fi
+
+  cmd=$words[2]
+  [[ -n ${aliases[$cmd]} ]] && cmd=${aliases[$cmd]}
+
+  case $cmd in
+    start)
+      _arguments -C \
+        '(-h --help)'{-h,--help}'[Show help]' \
+        '(-e --engine)'{-e,--engine}'[Update engine mode]:mode:(0 1 2)' \
+        '(-d --deps)'{-d,--deps}'[Update dependencies mode]:mode:(0 1 2)' \
+        '*:app name:_zhiva_guess'
+      ;;
+    install|uninstall)
+      _arguments -C \
+        '(-h --help)'{-h,--help}'[Show help]' \
+        '*:app name:_zhiva_guess'
+      ;;
+    list)
+      _arguments -C '(-h --help)'{-h,--help}'[Show help]'
+      ;;
+    open)
+      _arguments -C \
+        '(-h --help)'{-h,--help}'[Show help]' \
+        '*:url:_urls'
+      ;;
+    self|update)
+      _arguments -C '(-h --help)'{-h,--help}'[Show help]'
+      ;;
+    guess)
+      _arguments -C '*:app name:_zhiva_guess'
+      ;;
+    help|*)
+      _describe 'command' subcommands
+      ;;
+  esac
+}
+
+_zhiva_guess() {
+  local cur suggestions
+  cur=${words[CURRENT]}
+
+  if [[ $cur == -* ]]; then
+    compadd -- -h --help -e --engine -d --deps
+    return
+  fi
+
+  if [[ -z $cur ]]; then
+    suggestions=(${(f)"$(zhiva guess 2>/dev/null)"})
+  else
+    suggestions=(${(f)"$(zhiva guess "$cur" 2>/dev/null)"})
+  fi
+
+  if (( ${#suggestions[@]} )); then
+    compadd -a suggestions
+  fi
+}
+
+compdef _zhiva zhiva
