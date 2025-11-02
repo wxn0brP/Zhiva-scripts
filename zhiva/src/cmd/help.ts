@@ -15,6 +15,7 @@ Commands:
   open <link>                Open an application in the browser
   self                       Update Zhiva
   update                     Update Zhiva applications
+  guess [name]               Find an app by name
   help                       Show this help message
 
 --------------------------------------------------
@@ -65,4 +66,11 @@ Command Details:
     Examples:
       zhiva update
       zhiva update try       Return a list of apps that need updates
+
+  guess [name]               Find an app by name (fuzzy match)
+    Aliases:  find
+    
+    Examples:
+      zhiva guess
+      zhiva guess Zhiva
 `.trimStart());
