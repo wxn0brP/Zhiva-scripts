@@ -3,7 +3,7 @@
 import { $ } from "bun";
 import { readFileSync } from "fs";
 import { homedir } from "os";
-import { db } from "./utils/db";
+import { db } from "../utils/db";
 
 export async function checkRepos(repos: string[]) {
     const results = new Map<string, boolean>();

@@ -30,6 +30,6 @@ if (!knownCommands.includes(name)) {
     name = "help";
 }
 
-await import("./" + name);
+await import("./cmd/" + name);
 
 export { };
