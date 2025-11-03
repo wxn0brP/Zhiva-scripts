@@ -2,6 +2,7 @@ export async function interactiveSelect(options: string[]): Promise<string | nul
     if (options.length === 0) {
         return Promise.resolve(null);
     }
+    options = options.filter(o => o.includes("/"));
 
     return new Promise(resolve => {
         const stdin = process.stdin;
