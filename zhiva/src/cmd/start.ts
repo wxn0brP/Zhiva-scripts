@@ -99,30 +99,43 @@ if (!existsSync(appPath)) {
 }
 process.chdir(appPath);
 
-// --- NODE_PATH ---
-const nodePath = [
-    resolve(appPath, "node_modules"),
-    resolve(zhivaPath, "node_modules")
-].join(delimiter);
-
-process.env.PATH = `${process.env.PATH}${delimiter}${join(HOME, ".bun/bin")}`;
-
-// --- Run Bun ---
-const bun = spawn(
-    "bun",
-    ["run", "start"],
-    {
-        stdio: "inherit",
-        env: {
-            ...process.env,
-            ZHIVA_ROOT: zhivaPath,
-            NODE_PATH: nodePath
+async function start() {
+    // --- STATIC APPS ---
+    if (existsSync("zhiva.json")) {
+        const config = JSON.parse(readFileSync("zhiva.json", "utf-8"));
+        if (config.static) {
+            await import("../utils/static");
+            return;
         }
     }
-);
 
-bun.on("exit", code => process.exit(code ?? 1));
-bun.on("error", err => {
-    console.error("Failed to start Bun:", err);
-    process.exit(1);
-});
+    // --- NODE_PATH ---
+    const nodePath = [
+        resolve(appPath, "node_modules"),
+        resolve(zhivaPath, "node_modules")
+    ].join(delimiter);
+
+    process.env.PATH = `${process.env.PATH}${delimiter}${join(HOME, ".bun/bin")}`;
+
+    // --- Run Bun ---
+    const bun = spawn(
+        "bun",
+        ["run", "start"],
+        {
+            stdio: "inherit",
+            env: {
+                ...process.env,
+                ZHIVA_ROOT: zhivaPath,
+                NODE_PATH: nodePath
+            }
+        }
+    );
+
+    bun.on("exit", code => process.exit(code ?? 1));
+    bun.on("error", err => {
+        console.error("Failed to start Bun:", err);
+        process.exit(1);
+    });
+}
+
+start();
