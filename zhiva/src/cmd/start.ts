@@ -5,6 +5,8 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 import { homedir } from "os";
 import { delimiter, isAbsolute, join, resolve } from "path";
 import { parseArgs } from "util";
+import { guessApp } from "../utils/guess";
+import { interactiveSelect } from "../utils/select";
 
 // --- Args ---
 const { values, positionals } = parseArgs({
@@ -94,9 +96,29 @@ else {
 }
 
 if (!existsSync(appPath)) {
-    console.error(`App ${appName} does not exist`);
-    process.exit(1);
+    const appNameOnly = appName.includes("/") ? appName.split("/")[1] : appName;
+    const suggestions = await guessApp(appNameOnly);
+
+    if (suggestions.length > 0) {
+        const selectedApp = await interactiveSelect(suggestions);
+        if (selectedApp && selectedApp !== "Cancel") {
+            appName = selectedApp.includes("/") ? selectedApp : `wxn0brP/${selectedApp}`;
+            appPath = join(zhivaPath, "apps", appName);
+
+            if (!existsSync(appPath)) {
+                console.error(`[Z-SCR-2-07] Selected app '${appName}' could not be found.`);
+                process.exit(1);
+            }
+            console.log(`Starting selected app: ${appName}`);
+        } else {
+            process.exit(1);
+        }
+    } else {
+        console.error(`App ${appName} does not exist`);
+        process.exit(1);
+    }
 }
+
 process.chdir(appPath);
 
 async function start() {
