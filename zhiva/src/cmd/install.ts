@@ -12,6 +12,8 @@ if (!name) {
     process.exit(1);
 }
 if (!name.includes("/")) name = `wxn0brP/${name}`;
+let branch: string | undefined = undefined;
+[name, branch] = name.split("#");
 
 process.chdir(`${homedir()}/.zhiva`);
 if (!existsSync("apps")) mkdirSync("apps", { recursive: true });
@@ -21,49 +23,57 @@ if (existsSync(name)) {
     process.chdir(name);
     await $`git pull`;
 } else {
-    let branch: string | undefined = undefined;
-    let cloneName = name;
+    async function getConfig() {
+        let branch: string | undefined = undefined;
+        let cloneName = name;
 
-    try {
-        let configBranch = "HEAD";
-        let configPath = "zhiva.json";
-        const maxRedirects = 15;
+        try {
+            let configBranch = "HEAD";
+            let configPath = "zhiva.json";
+            const maxRedirects = 15;
 
-        for (let i = 0; i < maxRedirects; i++) {
-            if (i === maxRedirects - 1) {
-                console.error("Exceeded max redirects while resolving config.");
+            for (let i = 0; i < maxRedirects; i++) {
+                if (i === maxRedirects - 1) {
+                    console.error("Exceeded max redirects while resolving config.");
+                    break;
+                };
+
+                const res = await fetch(`https://raw.githubusercontent.com/${cloneName}/${configBranch}/${configPath}`);
+                if (!res.ok) break;
+                const tempConfig = await res.json().catch(() => ({}));
+
+                if (tempConfig.redirect_repo) {
+                    console.log(`Redirecting from "${cloneName}" to "${tempConfig.redirect_repo}"...`);
+                    name = tempConfig.redirect_repo;
+                    cloneName = tempConfig.redirect_repo;
+                    configBranch = "HEAD";
+                    configPath = "zhiva.json";
+                    continue;
+                }
+
+                if (tempConfig.redirect_zhiva) {
+                    const [newPath, newBranch] = tempConfig.redirect_zhiva.split("#");
+                    configPath = newPath.startsWith("./") ? newPath.slice(2) : newPath;
+                    if (newBranch) configBranch = newBranch;
+                    console.log(`Redirecting zhiva.json to "${tempConfig.redirect_zhiva}"...`);
+                    continue;
+                }
+
+                branch = tempConfig.branch;
                 break;
-            };
-
-            const res = await fetch(`https://raw.githubusercontent.com/${cloneName}/${configBranch}/${configPath}`);
-            if (!res.ok) break;
-            const tempConfig = await res.json();
-
-            if (tempConfig.redirect_repo) {
-                console.log(`Redirecting from "${cloneName}" to "${tempConfig.redirect_repo}"...`);
-                name = tempConfig.redirect_repo;
-                cloneName = tempConfig.redirect_repo;
-                configBranch = "HEAD";
-                configPath = "zhiva.json";
-                continue;
             }
-
-            if (tempConfig.redirect_zhiva) {
-                const [newPath, newBranch] = tempConfig.redirect_zhiva.split("#");
-                configPath = newPath.startsWith("./") ? newPath.slice(2) : newPath;
-                if (newBranch) configBranch = newBranch;
-                console.log(`Redirecting zhiva.json to "${tempConfig.redirect_zhiva}"...`);
-                continue;
-            }
-
-            branch = tempConfig.branch;
-            break;
+        } catch (e) {
+            console.error("Error resolving zhiva config:", e.message);
         }
-    } catch (e) {
-        console.error("Error resolving zhiva config:", e.message);
+
+        return [cloneName, branch];
     }
 
-    const cloneUrl = `https://github.com/${cloneName}.git`;
+    if (!branch) {
+        [name, branch] = await getConfig();
+    }
+
+    const cloneUrl = `https://github.com/${name}.git`;
     if (branch) {
         await $`git clone -b ${branch} ${cloneUrl} ${name}`;
     } else {
