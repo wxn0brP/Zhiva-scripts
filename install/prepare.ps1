@@ -28,6 +28,7 @@ if (-not (Test-Path $zhivaScriptsPath)) {
 Copy-Item -Path (Join-Path $zhivaScriptsPath "zhiva/package.json") -Destination (Join-Path $zhivaPath "package.json") -Force
 Set-Location $zhivaPath
 bun install --production --force
+bun run "%USERPROFILE%\.zhiva\scripts\zhiva\src\cli.ts" self
 Write-Host "[Z-SCR-6-07] 💜 Zhiva-scripts is installed."
 
 $cmdContent = @"
