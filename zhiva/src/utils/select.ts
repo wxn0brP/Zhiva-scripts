@@ -2,7 +2,6 @@ export async function interactiveSelect(options: string[]): Promise<string | nul
     if (options.length === 0) {
         return Promise.resolve(null);
     }
-    options.push("Cancel");
 
     return new Promise(resolve => {
         const stdin = process.stdin;
@@ -16,7 +15,7 @@ export async function interactiveSelect(options: string[]): Promise<string | nul
         let onData: (key: string) => void;
 
         if (options.length === 1) {
-            process.stdout.write(`[Z-SCR-2-05] App not found. Did you mean "${options[0]}"? [T/n] `);
+            process.stdout.write(`[Z-SCR-2-05] App not found. Did you mean "${options[0]}"? [Y/n] `);
 
             onData = (key: string) => {
                 const k = key.toLowerCase();
@@ -33,6 +32,7 @@ export async function interactiveSelect(options: string[]): Promise<string | nul
         } else {
             let selectedIndex = 0;
             let hasRendered = false;
+            options.push("Cancel");
 
             const render = () => {
                 if (hasRendered) {
