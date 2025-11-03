@@ -44,7 +44,7 @@ if (existsSync("zhiva.json")) {
     Object.assign(zhivaMeta, JSON.parse(readFileSync("zhiva.json", "utf-8")));
 }
 
-if (!updated && zhivaMeta.desktop && zhivaMeta.desktop.length) {
+if (!process.argv.includes("--nd") && !updated && zhivaMeta.desktop && zhivaMeta.desktop.length) {
     for (const path of zhivaMeta.desktop) {
         createShortCut({
             name,
