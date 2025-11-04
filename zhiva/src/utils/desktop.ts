@@ -21,7 +21,7 @@ export function createDesktopFile(opts: Opts) {
     const shortName = getShortName(opts);
     let icon = opts.icon;
     if (icon === "default") {
-        icon = `${process.env.HOME}/.zhiva/node_modules/@wxn0brp/zhiva-base-lib/zhiva.png`;
+        icon = `${process.env.HOME}/.zhiva/node_modules/@wxn0brp/zhiva-base-lib/assets/zhiva.png`;
     } else if (icon) {
         icon = resolve(icon);
     }
@@ -76,7 +76,7 @@ export function createLnkFile(opts: Opts) {
     const shortcutPath = join(path, `${shortName}.lnk`);
     let iconPath = opts.win_icon;
     if (iconPath === "default") {
-        iconPath = `${homedir()}/.zhiva/node_modules/@wxn0brp/zhiva-base-lib/zhiva.png`;
+        iconPath = `${homedir()}/.zhiva/node_modules/@wxn0brp/zhiva-base-lib/assets/zhiva.ico`;
     } else if (iconPath) {
         iconPath = resolve(iconPath);
     }
