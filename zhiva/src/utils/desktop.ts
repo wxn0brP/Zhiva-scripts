@@ -19,13 +19,19 @@ function getShortName(opts: Opts) {
 export function createDesktopFile(opts: Opts) {
     const bunPath = execSync("which bun").toString().trim();
     const shortName = getShortName(opts);
+    let icon = opts.icon;
+    if (icon === "default") {
+        icon = `${process.env.HOME}/.zhiva/node_modules/@wxn0brp/zhiva-base-lib/zhiva.png`;
+    } else if (icon) {
+        icon = resolve(icon);
+    }
 
     const desktop = `
 [Desktop Entry]
 Type=Application
 Name=${shortName}
 Exec=${bunPath} run ${process.env.HOME}/.zhiva/bin/zhiva start ${opts.name}
-${opts.icon ? `Icon=${resolve(opts.icon)}` : ""}
+${icon ? `Icon=${icon}` : ""}
 `.trim();
     let path = opts.path || "share";
     switch (path) {
@@ -68,7 +74,12 @@ export function createLnkFile(opts: Opts) {
     if (!existsSync(path)) mkdirSync(path, { recursive: true });
 
     const shortcutPath = join(path, `${shortName}.lnk`);
-    const iconPath = opts.win_icon ? resolve(opts.win_icon) : "";
+    let iconPath = opts.win_icon;
+    if (iconPath === "default") {
+        iconPath = `${homedir()}/.zhiva/node_modules/@wxn0brp/zhiva-base-lib/zhiva.png`;
+    } else if (iconPath) {
+        iconPath = resolve(iconPath);
+    }
 
     const ps = `
 $WshShell = New-Object -ComObject WScript.Shell;

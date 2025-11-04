@@ -94,8 +94,8 @@ const updated = await db.updateOneOrAdd("apps", { name }, { updatedAt: Date.now(
 
 const zhivaMeta = {
     name,
-    icon: undefined as string,
-    win_icon: undefined as string,
+    icon: "default",
+    win_icon: "default",
     desktop: ["share", "desktop"]
 };
 
