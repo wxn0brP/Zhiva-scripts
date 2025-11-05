@@ -1,28 +1,29 @@
-# Zhiva Scripts
+# Zhiva-scripts
 
-This module contains a collection of utility scripts for managing the Zhiva development environment and applications.
+This repository contains the scripts module for the larger Zhiva ecosystem.
 
-## Role in the Zhiva Project
+A command-line tool for managing your applications.
 
-The `scripts` module provides the command-line tools that power the Zhiva ecosystem. These scripts automate common tasks such as installation, environment setup, and application management, making it easier for both developers and users to work with Zhiva.
+## Why Zhiva-scripts?
 
-## Primary Responsibilities
-
--   **Environment Setup**: Prepares the local environment by installing necessary dependencies like `bun` and cloning required repositories.
--   **Application Installation**: Provides a command-line tool (`zhiva-install`) for installing Zhiva applications from Git repositories.
--   **Application Lifecycle**: Includes scripts for starting (`zhiva-startup`) and managing Zhiva applications.
--   **Dependency Management**: Helps in keeping the core components of Zhiva up to date.
+Zhiva-scripts serves as a core module within the broader Zhiva ecosystem, providing the essential command-line interface and scripting capabilities. It offers a unified set of commands and utilities designed to simplify the management of applications and interactions within the Zhiva platform. This module is crucial for enabling seamless installation, execution, and maintenance of various applications, acting as the primary interface for users to interact with the Zhiva system.
 
 ## Usage
 
-The scripts are designed to be run from the command line. The main entry points are `prepare.sh` (for Linux/macOS) and `prepare.ps1` (for Windows), which set up the environment and the other scripts.
+```bash
+zhiva <command> [options]
+```
 
-Example of installing and running an application:
+For example, to install an application:
 
 ```bash
-# Install the store-app
-~/.zhiva/bin/zhiva-install Zhiva-store-app
-
-# Run the store-app
-~/.zhiva/bin/zhiva-startup Zhiva-store-app
+zhiva install Zhiva-store-app
 ```
+
+## Documentation
+
+[**Full Documentation (DOCS.md)**](https://github.com/wxn0brP/Zhiva/blob/master/DOCS.md)
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
