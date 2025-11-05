@@ -1,4 +1,4 @@
-import { db } from "../utils/db";
+import { db } from "./db";
 
 export async function guessApp(name: string): Promise<string[]> {
     const pkgs = await db.find("apps");
