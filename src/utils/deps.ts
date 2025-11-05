@@ -23,7 +23,6 @@ console.log("[Z-SCR-3-02] 💜 Updating Zhiva scripts...");
 try {
     process.chdir("scripts");
     await $`git pull`;
-    process.chdir("zhiva");
     copyPkgToReqMods("zhiva-scripts");
 } finally {
     process.chdir(cwd);
