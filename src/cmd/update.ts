@@ -4,32 +4,34 @@ import { $ } from "bun";
 import { readFileSync } from "fs";
 import { homedir } from "os";
 import { db } from "../utils/db";
+const silentMode = process.argv[2] === "try";
 
 export async function checkRepos(repos: string[]) {
     const results = new Map<string, boolean>();
 
-    for (const repo of repos) {
-        try {
-            await $`git -C ${repo} fetch --quiet`;
-            const [local, remote, base] = await Promise.all([
-                $`git -C ${repo} rev-parse @`.text(),
-                $`git -C ${repo} rev-parse @{u}`.text(),
-                $`git -C ${repo} merge-base @ @{u}`.text(),
-            ]);
+    await Promise.all(
+        repos.map(async (repo) => {
+            try {
+                await $`git -C ${repo} fetch --quiet`;
 
-            const needsUpdate = local.trim() === base.trim() && remote.trim() !== base.trim();
-            results.set(repo, needsUpdate);
-        } catch {
-            results.set(repo, false);
-        }
-    }
+                const out = (await $`git -C ${repo} rev-list --count HEAD..@{u}`.text()).trim();
+                const needsUpdate = +out > 0;
+                results.set(repo, needsUpdate);
+
+                if (silentMode) return;
+                console.log(needsUpdate ? `[Z-SCR-8-02] 💜 ${repo} needs update` : `[Z-SCR-8-03] 💜 ${repo} is up to date`);
+            } catch {
+                results.set(repo, false);
+            }
+        })
+    );
 
     return results;
 }
 
 process.chdir(`${homedir()}/.zhiva/apps`);
 const apps = await db.find("apps").then((apps) => apps.map((app) => app.name));
-console.log("[Z-SCR-8-01] Checking apps...");
+if (!silentMode) console.log("[Z-SCR-8-01] Checking apps...");
 const update = await checkRepos(apps);
 
 if (process.argv[2] === "try") {
@@ -38,12 +40,9 @@ if (process.argv[2] === "try") {
 }
 
 for (const [repo, needsUpdate] of update) {
-    if (!needsUpdate) {
-        console.log(`[Z-SCR-8-07] 💜 ${repo} is up to date`);
-        continue;
-    }
+    if (!needsUpdate) continue;
 
-    console.log(`[Z-SCR-8-02] 💜 ${repo} needs update`);
+    console.log(`[Z-SCR-8-04] 💜 Updating ${repo}...`);
     try {
         process.chdir(repo);
         await $`git pull`;
@@ -52,7 +51,7 @@ for (const [repo, needsUpdate] of update) {
         if (pkg.scripts?.build) {
             await $`bun run build`;
         }
-        console.log(`[Z-SCR-8-03] 💜 ${repo} updated`);
+        console.log(`[Z-SCR-8-05] 💜 ${repo} updated`);
     } catch {
         console.error(`[Z-SCR-8-06] Error updating ${repo}`);
     } finally {
