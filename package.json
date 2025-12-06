@@ -1,6 +1,6 @@
 {
 	"dependencies": {
-		"@wxn0brp/db": "^0.40.1",
+		"@wxn0brp/db": "^0.41.0",
 		"@wxn0brp/db-lock": "github:wxn0brP/ValtheraDB-lock#dist"
 	},
 	"devDependencies": {
