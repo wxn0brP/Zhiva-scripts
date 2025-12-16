@@ -22,7 +22,7 @@ for (const [url, path] of Object.entries(files)) {
 const dirs = zhiva.static.dirs || { "/": "." };
 
 for (const [url, path] of Object.entries(dirs)) {
-    app.static(url, path);
+    app.static(url.replace(/^-+/, ""), path);
 }
 
 oneWindow();
