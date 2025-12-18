@@ -7,19 +7,20 @@ if (process.argv.length < 3) {
     process.exit(1);
 }
 
-let arg = process.argv[2];
-if (!arg.startsWith("zhiva://")) {
+const rawArg = process.argv[2];
+if (!rawArg.startsWith("zhiva://")) {
     console.error("[Z-SCR-9-02] Invalid protocol");
     process.exit(1);
 }
 
-const args = arg.slice("zhiva://".length).split("/");
+const [command, ...args] = rawArg.slice("zhiva://".length).split("/");
+const arg = args.join("/");
 
-console.log(`[Z-SCR-9-03] 💜 Executing ${args.join(" ")}...`);
+console.log(`[Z-SCR-9-03] 💜 Executing ${command} ${arg}...`);
 process.argv.splice(2, 1);
 
 const supportedCommands = ["start", "install", "open"];
-if (!supportedCommands.includes(args[0])) {
+if (!supportedCommands.includes(command)) {
     console.error("Invalid command");
     process.exit(1);
 }
@@ -28,7 +29,9 @@ const spawnArgs = [
     process.argv[0],
     "run",
     process.argv[1],
-    ...args
-]
+    command,
+    arg
+];
 
+console.log(`[z-SRC-9-04] 💜 Executing`, spawnArgs);
 spawn(spawnArgs);
