@@ -18,7 +18,7 @@ const args = arg.slice("zhiva://".length).split("/");
 console.log(`[Z-SCR-9-03] 💜 Executing ${args.join(" ")}...`);
 process.argv.splice(2, 1);
 
-const supportedCommands = ["start", "install"];
+const supportedCommands = ["start", "install", "open"];
 if (!supportedCommands.includes(args[0])) {
     console.error("Invalid command");
     process.exit(1);
