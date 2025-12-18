@@ -73,4 +73,6 @@ Command Details:
     Examples:
       zhiva guess
       zhiva guess Zhiva
+
+  protocol [url]            Zhiva protocol handler (zhiva://...)
 `.trimStart());

@@ -16,6 +16,7 @@ const aliases = {
     self: ["update-self", "self-update"],
     guess: ["find"],
     help: ["h"],
+    protocol: [],
 }
 
 for (const key of Object.keys(aliases)) {
