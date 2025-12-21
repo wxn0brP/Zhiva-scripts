@@ -19,9 +19,15 @@ process.chdir(`${homedir()}/.zhiva`);
 if (!existsSync("apps")) mkdirSync("apps", { recursive: true });
 process.chdir("apps");
 
-if (existsSync(name)) {
-    process.chdir(name);
+let appPath = name;
+if (name.startsWith("http") && name.endsWith(".git")) {
+    appPath = new URL(name.replace(".git", "")).pathname.split("/").slice(-2).join("/");
+}
+
+if (existsSync(appPath)) {
+    process.chdir(appPath);
     await $`git pull`;
+    name = appPath;
 } else {
     async function getConfig() {
         let branch: string | undefined = undefined;
@@ -69,16 +75,26 @@ if (existsSync(name)) {
         return [cloneName, branch];
     }
 
-    if (!branch) {
-        [name, branch] = await getConfig();
+    async function clone(cloneUrl: string, name: string, branch = "") {
+        if (branch) {
+            await $`git clone -b ${branch} ${cloneUrl} ${name}`;
+        } else {
+            await $`git clone ${cloneUrl} ${name}`;
+        }
     }
 
-    const cloneUrl = `https://github.com/${name}.git`;
-    if (branch) {
-        await $`git clone -b ${branch} ${cloneUrl} ${name}`;
+    if (name.startsWith("http") && name.endsWith(".git")) {
+        await clone(name, appPath, branch);
+        name = appPath;
+
     } else {
-        await $`git clone ${cloneUrl} ${name}`;
+        if (!branch) {
+            [name, branch] = await getConfig();
+        }
+
+        await clone(`https://github.com/${name}.git`, name, branch);
     }
+
     process.chdir(name);
 }
 
