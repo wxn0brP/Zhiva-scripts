@@ -5,6 +5,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 import { homedir } from "os";
 import { delimiter, isAbsolute, join, resolve } from "path";
 import { parseArgs } from "util";
+import { ensureAppName } from "../utils/appName";
 import { guessApp } from "../utils/guess";
 import { interactiveSelect } from "../utils/select";
 
@@ -91,7 +92,7 @@ let appPath = "";
 if (isAbsolute(appName)) appPath = appName;
 else if (appName === ".") appPath = originalPath;
 else {
-    appName = appName.includes("/") ? appName : `wxn0brP/${appName}`;
+    appName = ensureAppName(appName);
     appPath = join(zhivaPath, "apps", appName);
 }
 
@@ -102,7 +103,7 @@ if (!existsSync(appPath)) {
     if (suggestions.length > 0) {
         const selectedApp = await interactiveSelect(suggestions);
         if (selectedApp && selectedApp !== "Cancel") {
-            appName = selectedApp.includes("/") ? selectedApp : `wxn0brP/${selectedApp}`;
+            appName = ensureAppName(selectedApp);
             appPath = join(zhivaPath, "apps", appName);
 
             if (!existsSync(appPath)) {

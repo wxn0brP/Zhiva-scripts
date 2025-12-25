@@ -3,6 +3,7 @@
 import { existsSync } from "fs";
 import { rm } from "fs/promises";
 import { homedir } from "os";
+import { ensureAppName } from "../utils/appName";
 import { db } from "../utils/db";
 
 export default async (args: string[]) => {
@@ -12,7 +13,7 @@ export default async (args: string[]) => {
         process.exit(1);
     }
 
-    if (!name.includes("/")) name = `wxn0brP/${name}`;
+    name = ensureAppName(name);
 
     process.chdir(`${homedir()}/.zhiva/apps`);
 

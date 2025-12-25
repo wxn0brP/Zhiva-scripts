@@ -3,6 +3,7 @@
 import { $ } from "bun";
 import { existsSync, mkdirSync, readFileSync } from "fs";
 import { homedir } from "os";
+import { ensureAppName } from "../utils/appName";
 import { db } from "../utils/db";
 import { createShortCut } from "../utils/desktop";
 import { clone, getConfig } from "../utils/install";
@@ -14,7 +15,7 @@ export default async (args: string[]) => {
         process.exit(1);
     }
 
-    if (!name.includes("/")) name = `wxn0brP/${name}`;
+    name = ensureAppName(name);
     let branch: string | undefined = undefined;
     [name, branch] = name.split("#");
 
