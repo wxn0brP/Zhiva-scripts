@@ -4,14 +4,18 @@ import { db } from "../utils/db";
 
 const apps = await db.find("apps");
 
-if (!apps.length) {
-    console.log("No apps installed");
-    process.exit(0);
-}
+export default (args: string[]) => {
+    const json = args.includes("--json");
 
-console.log("Installed apps:");
-for (const app of apps) {
-    console.log(`- ${app.name}`);
-}
+    if (!apps.length)
+        return console.log(json ? "[]" : "No apps installed");
 
-export default () => { }
+
+    if (json)
+        return console.log(JSON.stringify(apps.map((app) => app.name)));
+
+    console.log("Installed apps:");
+    for (const app of apps) {
+        console.log(`- ${app.name}`);
+    }
+}

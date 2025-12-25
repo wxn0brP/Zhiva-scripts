@@ -51,6 +51,8 @@ Command Details:
 
   list                       List installed applications
     Aliases:  l, ls
+    Options:
+      --json                 Output as JSON
 
   open <link>                Open an application in the browser
     Aliases:  link
