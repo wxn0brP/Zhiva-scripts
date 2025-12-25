@@ -66,10 +66,12 @@ Command Details:
 
   update                     Update Zhiva applications
     Aliases:  u, up
+    Options:
+      --json                 Output as JSON
 
     Examples:
       zhiva update
-      zhiva update try       Return a list of apps that need updates
+      zhiva update --json
 
   guess [name]               Find an app by name (fuzzy match)
     Aliases:  find

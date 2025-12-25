@@ -4,9 +4,8 @@ import { $ } from "bun";
 import { readFileSync } from "fs";
 import { homedir } from "os";
 import { db } from "../utils/db";
-const silentMode = process.argv[2] === "try";
 
-export async function checkRepos(repos: string[]) {
+export async function checkRepos(repos: string[], jsonMode) {
     const results = new Map<string, boolean>();
 
     await Promise.all(
@@ -18,7 +17,7 @@ export async function checkRepos(repos: string[]) {
                 const needsUpdate = +out > 0;
                 results.set(repo, needsUpdate);
 
-                if (silentMode) return;
+                if (jsonMode) return;
                 console.log(needsUpdate ? `[Z-SCR-8-02] 💜 ${repo} needs update` : `[Z-SCR-8-03] 💜 ${repo} is up to date`);
             } catch {
                 results.set(repo, false);
@@ -30,14 +29,17 @@ export async function checkRepos(repos: string[]) {
 }
 
 export default async (args: string[]) => {
+    const jsonMode = args.includes("--json");
     process.chdir(`${homedir()}/.zhiva/apps`);
-    const apps = await db.find("apps").then((apps) => apps.map((app) => app.name));
-    if (!silentMode) console.log("[Z-SCR-8-01] Checking apps...");
-    const update = await checkRepos(apps);
 
-    if (args[0] === "try") {
-        console.log(`[JSON]${JSON.stringify(Object.fromEntries(update))}[/JSON]`);
-        process.exit(0);
+    const apps = await db.find("apps").then((apps) => apps.map((app) => app.name));
+    if (!jsonMode) console.log("[Z-SCR-8-01] Checking apps...");
+
+    const update = await checkRepos(apps, jsonMode);
+
+    if (jsonMode) {
+        console.log(JSON.stringify(Object.fromEntries(update)));
+        return;
     }
 
     for (const [repo, needsUpdate] of update) {
