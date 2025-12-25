@@ -35,6 +35,8 @@ Command Details:
 
   install <app-name>         Install an application
     Aliases:  i, add
+    Options:
+      --nd                   Do not create desktop shortcuts
 
     Examples:
       zhiva install Zhiva-store-app
