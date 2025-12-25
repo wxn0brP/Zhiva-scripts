@@ -2,4 +2,6 @@
 
 import { openWindow } from "@wxn0brp/zhiva-base-lib/openWindow";
 
-openWindow(process.argv[2], process.argv[3] || "Zhiva");
+export default (args: string[]) => {
+    openWindow(args[0], args[1] || "Zhiva");
+}

@@ -20,7 +20,7 @@ const { values, positionals } = parseArgs({
 
 if (values.help) {
     console.log(`[Z-SCR-2-01]
-Usage: zhiva-startup [options] <app-name>
+Usage: zhiva run [options] <app-name>
 
 Options:
   -h, --help            Show this help message
@@ -76,7 +76,7 @@ await handleComponent("engine");
 await handleComponent("deps");
 
 // --- App ---
-let appName = positionals[0];
+let appName = positionals[1];
 if (appName === "init") {
     console.log("[Z-SCR-2-04] 💜 Init completed");
     process.exit(0);
@@ -161,3 +161,4 @@ async function start() {
 }
 
 start();
+export default () => { }

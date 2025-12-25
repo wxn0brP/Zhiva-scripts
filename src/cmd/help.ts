@@ -76,3 +76,5 @@ Command Details:
 
   protocol [url]            Zhiva protocol handler (zhiva://...)
 `.trimStart());
+
+export default () => { }

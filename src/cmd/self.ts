@@ -10,3 +10,5 @@ for (const name of ["deps", "engine"]) {
 }
 writeFileSync("latest-check", String(Date.now()));
 console.log("[Z-SCR-7-01] 💜 Update completed");
+
+export default () => { }

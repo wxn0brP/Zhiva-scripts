@@ -13,3 +13,5 @@ console.log("Installed apps:");
 for (const app of apps) {
     console.log(`- ${app.name}`);
 }
+
+export default () => { }

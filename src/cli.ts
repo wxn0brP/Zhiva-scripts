@@ -4,7 +4,6 @@ let name = process.argv[2];
 if (!name) {
     name = "help";
 }
-process.argv.splice(2, 1);
 
 const aliases = {
     start: ["run", "startup", "o", "r"],
@@ -32,6 +31,6 @@ if (!knownCommands.includes(name)) {
     name = "help";
 }
 
-await import("./cmd/" + name);
+import("./cmd/" + name).then(module => module.default(process.argv.slice(3)));
 
 export { };

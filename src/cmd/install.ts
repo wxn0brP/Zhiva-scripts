@@ -7,74 +7,81 @@ import { db } from "../utils/db";
 import { createShortCut } from "../utils/desktop";
 import { clone, getConfig } from "../utils/install";
 
-let name = process.argv[2];
-if (!name) {
-    console.error("Please provide an app name");
-    process.exit(1);
-}
-if (!name.includes("/")) name = `wxn0brP/${name}`;
-let branch: string | undefined = undefined;
-[name, branch] = name.split("#");
+export default async (args: string[]) => {
+    let name = args[0];
+    if (!name) {
+        console.error("Please provide an app name");
+        process.exit(1);
+    }
 
-process.chdir(`${homedir()}/.zhiva`);
-if (!existsSync("apps")) mkdirSync("apps", { recursive: true });
-process.chdir("apps");
+    if (!name.includes("/")) name = `wxn0brP/${name}`;
+    let branch: string | undefined = undefined;
+    [name, branch] = name.split("#");
 
-let appPath = name;
-if (name.startsWith("http") && name.endsWith(".git")) {
-    appPath = new URL(name.replace(".git", "")).pathname.split("/").slice(-2).join("/");
-}
+    process.chdir(`${homedir()}/.zhiva`);
+    if (!existsSync("apps")) mkdirSync("apps", { recursive: true });
+    process.chdir("apps");
 
-if (existsSync(appPath)) {
-    process.chdir(appPath);
-    await $`git pull`;
-    name = appPath;
-
-} else {
+    let appPath = name;
     if (name.startsWith("http") && name.endsWith(".git")) {
-        await clone(name, appPath, branch);
+        appPath = new URL(name.replace(".git", "")).pathname.split("/").slice(-2).join("/");
+    }
+
+    if (existsSync(appPath)) {
+        process.chdir(appPath);
+        await $`git pull`;
         name = appPath;
 
     } else {
-        if (!branch) {
-            [name, branch] = await getConfig(name);
+        if (name.startsWith("http") && name.endsWith(".git")) {
+            await clone(name, appPath, branch);
+            name = appPath;
+
+        } else {
+            if (!branch) {
+                [name, branch] = await getConfig(name);
+            }
+
+            await clone(`https://github.com/${name}.git`, name, branch);
         }
 
-        await clone(`https://github.com/${name}.git`, name, branch);
+        process.chdir(name);
     }
 
-    process.chdir(name);
-}
-
-if (existsSync("package.json")) {
-    await $`bun install --production --force`;
-    const pkg = JSON.parse(readFileSync("package.json", "utf-8"));
-    if (pkg.scripts?.build) {
-        await $`bun run build`;
+    if (existsSync("package.json")) {
+        await $`bun install --production --force`;
+        const pkg = JSON.parse(readFileSync("package.json", "utf-8"));
+        if (pkg.scripts?.build) {
+            await $`bun run build`;
+        }
     }
-}
 
-const updated = await db.updateOneOrAdd("apps", { name }, { updatedAt: Date.now() });
+    const updated = await db.updateOneOrAdd("apps", { name }, { updatedAt: Date.now() });
 
-const zhivaMeta = {
-    name,
-    icon: "default",
-    win_icon: "default",
-    desktop: ["share", "desktop"]
-};
+    const zhivaMeta = {
+        name,
+        icon: "default",
+        win_icon: "default",
+        desktop: ["share", "desktop"]
+    };
 
-if (existsSync("zhiva.json")) {
-    Object.assign(zhivaMeta, JSON.parse(readFileSync("zhiva.json", "utf-8")));
-}
+    if (existsSync("zhiva.json")) {
+        Object.assign(zhivaMeta, JSON.parse(readFileSync("zhiva.json", "utf-8")));
+    }
 
-if (!process.argv.includes("--nd") && !updated && zhivaMeta.desktop && zhivaMeta.desktop.length) {
-    for (const path of zhivaMeta.desktop) {
-        createShortCut({
-            name,
-            appName: zhivaMeta.name,
-            path,
-            icon: zhivaMeta?.icon,
-            win_icon: zhivaMeta?.win_icon,
-        });
+    if (
+        !args.includes("--nd") &&
+        !updated &&
+        zhivaMeta.desktop?.length
+    ) {
+        for (const path of zhivaMeta.desktop) {
+            createShortCut({
+                name,
+                appName: zhivaMeta.name,
+                path,
+                icon: zhivaMeta?.icon,
+                win_icon: zhivaMeta?.win_icon,
+            });
+        }
     }
 }

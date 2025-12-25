@@ -29,32 +29,34 @@ export async function checkRepos(repos: string[]) {
     return results;
 }
 
-process.chdir(`${homedir()}/.zhiva/apps`);
-const apps = await db.find("apps").then((apps) => apps.map((app) => app.name));
-if (!silentMode) console.log("[Z-SCR-8-01] Checking apps...");
-const update = await checkRepos(apps);
+export default async (args: string[]) => {
+    process.chdir(`${homedir()}/.zhiva/apps`);
+    const apps = await db.find("apps").then((apps) => apps.map((app) => app.name));
+    if (!silentMode) console.log("[Z-SCR-8-01] Checking apps...");
+    const update = await checkRepos(apps);
 
-if (process.argv[2] === "try") {
-    console.log(`[JSON]${JSON.stringify(Object.fromEntries(update))}[/JSON]`);
-    process.exit(0);
-}
+    if (args[0] === "try") {
+        console.log(`[JSON]${JSON.stringify(Object.fromEntries(update))}[/JSON]`);
+        process.exit(0);
+    }
 
-for (const [repo, needsUpdate] of update) {
-    if (!needsUpdate) continue;
+    for (const [repo, needsUpdate] of update) {
+        if (!needsUpdate) continue;
 
-    console.log(`[Z-SCR-8-04] 💜 Updating ${repo}...`);
-    try {
-        process.chdir(repo);
-        await $`git pull`;
-        await $`bun install --production --force`;
-        const pkg = JSON.parse(readFileSync("package.json", "utf-8"));
-        if (pkg.scripts?.build) {
-            await $`bun run build`;
+        console.log(`[Z-SCR-8-04] 💜 Updating ${repo}...`);
+        try {
+            process.chdir(repo);
+            await $`git pull`;
+            await $`bun install --production --force`;
+            const pkg = JSON.parse(readFileSync("package.json", "utf-8"));
+            if (pkg.scripts?.build) {
+                await $`bun run build`;
+            }
+            console.log(`[Z-SCR-8-05] 💜 ${repo} updated`);
+        } catch {
+            console.error(`[Z-SCR-8-06] Error updating ${repo}`);
+        } finally {
+            process.chdir("../..");
         }
-        console.log(`[Z-SCR-8-05] 💜 ${repo} updated`);
-    } catch {
-        console.error(`[Z-SCR-8-06] Error updating ${repo}`);
-    } finally {
-        process.chdir("../..");
     }
 }
