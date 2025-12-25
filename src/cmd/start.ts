@@ -7,7 +7,7 @@ import { delimiter, isAbsolute, join, resolve } from "path";
 import { parseArgs } from "util";
 import { ensureAppName } from "../utils/appName";
 import { guessApp } from "../utils/guess";
-import { interactiveSelect } from "../utils/select";
+import { interactiveAppSelect } from "../utils/select";
 
 // --- Args ---
 const { values, positionals } = parseArgs({
@@ -101,7 +101,7 @@ if (!existsSync(appPath)) {
     const suggestions = await guessApp(appNameOnly);
 
     if (suggestions.length > 0) {
-        const selectedApp = await interactiveSelect(suggestions);
+        const selectedApp = await interactiveAppSelect(suggestions);
         if (selectedApp && selectedApp !== "Cancel") {
             appName = ensureAppName(selectedApp);
             appPath = join(zhivaPath, "apps", appName);
