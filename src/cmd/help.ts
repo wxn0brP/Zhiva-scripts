@@ -1,5 +1,3 @@
-#!/usr/bin/env bun
-
 console.log(`
 Zhiva CLI - A tool for managing Zhiva applications
 --------------------------------------------------

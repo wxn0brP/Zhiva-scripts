@@ -1,5 +1,3 @@
-#!/usr/bin/env bun
-
 import { db } from "../utils/db";
 
 const apps = await db.find("apps");

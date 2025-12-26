@@ -1,5 +1,3 @@
-#!/usr/bin/env bun
-
 import { spawn } from "child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 import { homedir } from "os";

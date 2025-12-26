@@ -1,5 +1,3 @@
-#!/usr/bin/env bun
-
 import { $ } from "bun";
 import { readFileSync } from "fs";
 import { homedir } from "os";

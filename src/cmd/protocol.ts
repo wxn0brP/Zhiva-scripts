@@ -1,5 +1,3 @@
-#!/usr/bin/env bun
-
 import { spawn } from "bun";
 
 export default async (args: string[]) => {

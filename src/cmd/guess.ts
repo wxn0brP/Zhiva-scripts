@@ -1,5 +1,3 @@
-#!/usr/bin/env bun
-
 import { guessApp } from "../utils/guess";
 
 export default async (args: string[]) => {

@@ -1,5 +1,3 @@
-#!/usr/bin/env bun
-
 import { openWindow } from "@wxn0brp/zhiva-base-lib/openWindow";
 
 export default (args: string[]) => {

@@ -1,5 +1,3 @@
-#!/usr/bin/env bun
-
 import { writeFileSync } from "fs";
 import { homedir } from "os";
 import { join } from "path";

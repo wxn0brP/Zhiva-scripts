@@ -1,5 +1,3 @@
-#!/usr/bin/env bun
-
 import { existsSync } from "fs";
 import { rm } from "fs/promises";
 import { homedir } from "os";
