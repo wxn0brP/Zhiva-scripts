@@ -82,6 +82,10 @@ Command Details:
   search [query]             Search for apps by name (fuzzy match, data from GitHub)
     Aliases:  s
 
+    Examples:
+      zhiva search
+      zhiva search Zhiva-store-app
+
   create-desktop-file <app-name>  Create desktop file for an installed application
     Aliases:  cdf
     Options:

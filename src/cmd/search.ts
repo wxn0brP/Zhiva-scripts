@@ -3,11 +3,6 @@ import { _guessApp } from "../utils/guess";
 
 export default async (args: string[]) => {
     const name = args[0];
-    if (!name) {
-        console.error("Please provide an app name");
-        process.exit(1);
-    }
-
     const apps = await getFromCache("search", 5 * 60 * 1000, fetchData);
     const results = await _guessApp(name, apps);
 
