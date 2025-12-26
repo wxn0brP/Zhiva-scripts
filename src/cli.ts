@@ -15,6 +15,7 @@ const aliases = {
     self: ["update-self", "self-update"],
     guess: ["find"],
     search: ["s"],
+    "create-desktop-file": ["cdf"],
     help: ["h"],
     protocol: [],
 }

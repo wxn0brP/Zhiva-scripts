@@ -13,7 +13,8 @@ Commands:
   open <link>                Open an application in the browser
   self                       Update Zhiva
   update                     Update Zhiva applications
-  guess [name]               Find an app by name
+  guess [app-name]           Find an app by name
+  cdf <app-name>             Create desktop file for an installed application
   help                       Show this help message
 
 --------------------------------------------------
@@ -73,13 +74,26 @@ Command Details:
 
   guess [name]               Find an app by name (fuzzy match, data from local apps)
     Aliases:  find
-    
+
     Examples:
       zhiva guess
       zhiva guess Zhiva
 
   search [query]             Search for apps by name (fuzzy match, data from GitHub)
     Aliases:  s
+
+  create-desktop-file <app-name>  Create desktop file for an installed application
+    Aliases:  cdf
+    Options:
+      -d, --desktop          Create desktop shortcut on Desktop
+      -s, --share            Create desktop shortcut in applications menu
+      If no option is specified, both desktop and share shortcuts will be created
+
+    Examples:
+      zhiva create-desktop-file Zhiva-store-app
+      zhiva cdf username/repo --desktop
+      zhiva cdf username/repo --share
+      zhiva cdf username/repo --desktop --share
 
   protocol [url]            Zhiva protocol handler (zhiva://...)
 `.trimStart());

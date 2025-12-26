@@ -8,7 +8,7 @@ export interface Opts {
     appName?: string;
     icon?: string;
     win_icon?: string;
-    path?: string;
+    path?: "share" | "desktop" | (string & {});
 }
 
 function getShortName(opts: Opts) {
