@@ -4,6 +4,10 @@ export async function guessApp(name: string): Promise<string[]> {
     const pkgs = await db.find("apps");
     const names = pkgs.map((pkg) => pkg.name);
 
+    return _guessApp(name, names);
+}
+
+export async function _guessApp(name: string, names: string[]): Promise<string[]> {
     const all = [...names];
     for (const pkg of names) {
         if (pkg.startsWith("wxn0brP/")) {
@@ -11,25 +15,24 @@ export async function guessApp(name: string): Promise<string[]> {
         }
     }
 
-    if (!name) {
+    if (!name)
         return all;
-    }
-
-    const fuzzyMatch = (query: string, text: string) => {
-        query = query.toLowerCase();
-        text = text.toLowerCase();
-
-        let i = 0;
-        for (const char of text) {
-            if (char === query[i]) i++;
-            if (i === query.length) return true;
-        }
-        return false;
-    }
 
     const filtered = all
         .filter((n) => fuzzyMatch(name, n))
         .sort((a, b) => a.length - b.length);
 
     return filtered;
+}
+
+export function fuzzyMatch(query: string, text: string): boolean {
+    query = query.toLowerCase();
+    text = text.toLowerCase();
+
+    let i = 0;
+    for (const char of text) {
+        if (char === query[i]) i++;
+        if (i === query.length) return true;
+    }
+    return false;
 }

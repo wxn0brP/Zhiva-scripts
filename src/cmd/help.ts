@@ -71,12 +71,15 @@ Command Details:
       zhiva update
       zhiva update --json
 
-  guess [name]               Find an app by name (fuzzy match)
+  guess [name]               Find an app by name (fuzzy match, data from local apps)
     Aliases:  find
     
     Examples:
       zhiva guess
       zhiva guess Zhiva
+
+  search [query]             Search for apps by name (fuzzy match, data from GitHub)
+    Aliases:  s
 
   protocol [url]            Zhiva protocol handler (zhiva://...)
 `.trimStart());

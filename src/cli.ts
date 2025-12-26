@@ -14,6 +14,7 @@ const aliases = {
     update: ["u", "up"],
     self: ["update-self", "self-update"],
     guess: ["find"],
+    search: ["s"],
     help: ["h"],
     protocol: [],
 }
