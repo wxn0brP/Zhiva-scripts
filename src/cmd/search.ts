@@ -28,7 +28,8 @@ async function fetchAllRepos() {
     const data = await fetch("https://api.github.com/search/repositories?q=topic:Zhiva-app").then((res) => res.json())
     return data.items.map((item: any) => ({
         full_name: item.full_name,
-        description: item.description
+        description: item.description,
+        stargazers_count: item.stargazers_count
     }));
 }
 
