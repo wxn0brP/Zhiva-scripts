@@ -7,7 +7,7 @@ export default async (args: string[]) => {
     const apps = await getFromCache("search", 5 * 60 * 1000, fetchAllRepos);
     const banned = await getFromCache("banned", 5 * 60 * 1000, fetchBanned);
 
-    apps.filter((item: any) => !banned[item.full_name]);
+    apps.filter((item: any) => !banned.includes(item.full_name));
     const results = await _guessApp(name, apps.map((item: any) => item.full_name));
 
     if (!args.includes("--json")) {
@@ -15,7 +15,7 @@ export default async (args: string[]) => {
         return;
     }
 
-    const verified = await getFromCache("verified", 5 * 60 * 1000, fetchVerified, apps);
+    const verified = await getFromCache("verified", 5 * 60 * 1000, fetchVerified, apps.map((item: any) => item.full_name));
     apps.filter((item: any) => results.includes(item.full_name));
     apps.forEach((item: any) => {
         item.verified = verified[item.full_name];
@@ -39,15 +39,12 @@ async function fetchTOML(file: string) {
 }
 
 async function fetchBanned() {
-    return await fetchTOML("banned");
+    return Object.keys(await fetchTOML("banned"));
 }
 
-async function fetchVerified(apps: string[]) {
+async function fetchVerified(installedApps: string[]) {
     const data = await fetchTOML("verified");
-    apps.filter(app => app.startsWith("wxn0brP/")).forEach(app => {
-        data[app] = {
-            at: new Date().toISOString().slice(0, 10),
-        };
-    });
-    return data;
+    const apps = Object.keys(data);
+    apps.push(...installedApps.filter(app => app.startsWith("wxn0brP/")));
+    return apps;
 }
