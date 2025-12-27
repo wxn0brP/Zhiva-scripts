@@ -3,4 +3,7 @@ import { createLock } from "@wxn0brp/db-lock";
 import { homedir } from "os";
 
 const dbPath = homedir() + "/.zhiva/master.db";
-export const db = createLock(new Valthera(dbPath));
+export const db = createLock(new Valthera(dbPath), {
+    retryTime: 100,
+    retryCount: 200
+});
