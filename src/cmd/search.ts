@@ -17,11 +17,11 @@ export default async (args: string[]) => {
 
     const verified = await getFromCache("verified", 5 * 60 * 1000, fetchVerified, apps);
     apps.filter((item: any) => results.includes(item.full_name));
+    apps.forEach((item: any) => {
+        item.verified = verified[item.full_name];
+    });
 
-    process.stdout.write(JSON.stringify({
-        apps,
-        verified
-    }));
+    process.stdout.write(JSON.stringify(apps));
 }
 
 async function fetchAllRepos() {
