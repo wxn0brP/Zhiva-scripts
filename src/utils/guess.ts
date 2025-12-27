@@ -22,7 +22,7 @@ export async function _guessApp(name: string, names: string[]): Promise<string[]
         .filter((n) => fuzzyMatch(name, n))
         .sort((a, b) => a.length - b.length);
 
-    return filtered;
+    return filtered.filter(n => n.includes("/"));
 }
 
 export function fuzzyMatch(query: string, text: string): boolean {
