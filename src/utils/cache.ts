@@ -6,13 +6,18 @@ export interface CacheEntry {
     exp: number;
 }
 
-export async function getFromCache<T = any>(name: string, ttl: number, getData: (...args: any[]) => any, ...args: any[]): Promise<T> {
+export async function getFromCache<T extends (...args: any) => any>(
+    name: string,
+    ttl: number,
+    getData: T,
+    args?: Parameters<T>
+): Promise<ReturnType<T>> {
     const cached = await db.findOne<CacheEntry>("cache", { _id: name });
 
     if (cached && cached.exp > Date.now())
         return cached.data;
 
-    const data = await getData(...args);
+    const data = await getData(args);
     await db.updateOneOrAdd("cache", { _id: name }, { data, exp: Date.now() + ttl });
 
     return data;
