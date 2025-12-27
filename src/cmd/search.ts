@@ -15,8 +15,13 @@ export default async (args: string[]) => {
         return;
     }
 
+    const verified = await getFromCache("verified", 5 * 60 * 1000, fetchVerified, apps);
     apps.filter((item: any) => results.includes(item.full_name));
-    process.stdout.write(JSON.stringify(apps));
+
+    process.stdout.write(JSON.stringify({
+        apps,
+        verified
+    }));
 }
 
 async function fetchAllRepos() {
@@ -27,7 +32,21 @@ async function fetchAllRepos() {
     }));
 }
 
-async function fetchBanned() {
-    const data = await fetch(`https://raw.githubusercontent.com/wxn0brP/Zhiva-registry/master/banned.toml`).then((res) => res.text());
+async function fetchTOML(file: string) {
+    const data = await fetch(`https://raw.githubusercontent.com/wxn0brP/Zhiva-registry/master/${file}.toml`).then((res) => res.text());
     return parseToml(data);
+}
+
+async function fetchBanned() {
+    return await fetchTOML("banned");
+}
+
+async function fetchVerified(apps: string[]) {
+    const data = await fetchTOML("verified");
+    apps.filter(app => app.startsWith("wxn0brP/")).forEach(app => {
+        data[app] = {
+            at: new Date().toISOString().slice(0, 10),
+        };
+    });
+    return data;
 }
