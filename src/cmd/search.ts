@@ -10,14 +10,16 @@ interface Repo {
 }
 
 export default async (args: string[]) => {
-    const name = args[0];
+    const name = args.find((arg) => !arg.startsWith("-")) || "";
+    const jsonMode = args.includes("--json");
+
     let apps = await getFromCache("search", 5 * 60 * 1000, fetchAllRepos);
     const banned = await getFromCache("banned", 5 * 60 * 1000, fetchBanned);
 
     apps = apps.filter(item => !banned.includes(item.full_name));
     const results = await _guessApp(name, apps.map(item => item.full_name));
 
-    if (!args.includes("--json")) {
+    if (!jsonMode) {
         process.stdout.write(results.join("\n"));
         return;
     }

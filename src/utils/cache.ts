@@ -10,7 +10,7 @@ export async function getFromCache<T extends (...args: any) => any>(
     name: string,
     ttl: number,
     getData: T,
-    args?: Parameters<T>
+    args: Parameters<T> = [] as any
 ): Promise<ReturnType<T>> {
     const cached = await db.findOne<CacheEntry>("cache", { _id: name });
 
