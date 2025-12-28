@@ -19,7 +19,7 @@ export default async (args: string[]) => {
     apps = apps.filter(item => !banned.includes(item.name));
     const results = await _guessApp(name, apps.map(item => item.name));
 
-    if (!jsonMode) {
+    if (!jsonMode && !prettyMode) {
         console.log(results.join("\n"));
         return;
     }
