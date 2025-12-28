@@ -16,6 +16,7 @@ const aliases = {
     guess: ["find"],
     search: ["s"],
     "create-desktop-file": ["cdf"],
+    db: [],
     help: ["h"],
     protocol: [],
 }
