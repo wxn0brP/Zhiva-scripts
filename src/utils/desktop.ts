@@ -23,6 +23,7 @@ export function createDesktopFile(opts: Opts) {
     if (icon === "default") {
         icon = `${process.env.HOME}/.zhiva/node_modules/@wxn0brp/zhiva-base-lib/assets/zhiva.png`;
     } else if (icon) {
+        icon = downloadFileIsNeeded(icon);
         icon = resolve(icon);
     }
 
@@ -78,6 +79,7 @@ export function createLnkFile(opts: Opts) {
     if (iconPath === "default") {
         iconPath = `${homedir()}/.zhiva/node_modules/@wxn0brp/zhiva-base-lib/assets/zhiva.ico`;
     } else if (iconPath) {
+        iconPath = downloadFileIsNeeded(iconPath);
         iconPath = resolve(iconPath);
     }
 
@@ -91,6 +93,16 @@ $Shortcut.Save();
 `.trim().split("\n").join(" ");
     execSync(`powershell -NoProfile -ExecutionPolicy Bypass -Command "${ps}"`);
     return shortcutPath;
+}
+
+function downloadFileIsNeeded(url: string) {
+    if (!url.startsWith("http")) return url;
+    const fileName = url.split("/").pop();
+    if (existsSync(fileName)) return fileName;
+
+    execSync(`curl -o ${fileName} ${url}`);
+
+    return fileName;
 }
 
 export function createShortCut(opts: Opts) {
