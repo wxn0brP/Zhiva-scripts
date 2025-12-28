@@ -6,7 +6,7 @@ Usage:
   zhiva <command> [options]
 
 Commands:
-  start <app-name>            Start an application
+  start [app-name]            Start an application
   install <app-name>          Install an application from a GitHub repository
   uninstall <app-name>        Uninstall an installed application
   list                        List installed applications

@@ -6,6 +6,7 @@ import { parseArgs } from "util";
 import { ensureAppName } from "../utils/appName";
 import { guessApp } from "../utils/guess";
 import { interactiveAppSelect } from "../utils/select";
+import { db } from "../utils/db";
 
 // --- Args ---
 const { values, positionals } = parseArgs({
@@ -75,15 +76,17 @@ await handleComponent("engine");
 await handleComponent("deps");
 
 // --- App ---
-let appName = positionals[1];
+let appName = positionals[1]
 if (appName === "init") {
     console.log("[Z-SCR-2-04] 💜 Init completed");
     process.exit(0);
 }
 
 if (!appName) {
-    console.error("Please provide an app name");
-    process.exit(1);
+    const apps = await db.find("apps");
+    const appNames = apps.map((app: any) => app.name);
+    appName = await interactiveAppSelect(appNames);
+    if (appName === "Cancel") process.exit(1);
 }
 
 let appPath = "";
