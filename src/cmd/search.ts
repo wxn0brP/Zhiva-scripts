@@ -20,7 +20,7 @@ export default async (args: string[]) => {
     const results = await _guessApp(name, apps.map(item => item.full_name));
 
     if (!jsonMode) {
-        process.stdout.write(results.join("\n"));
+        console.log(results.join("\n"));
         return;
     }
 
@@ -36,7 +36,7 @@ export default async (args: string[]) => {
     apps = apps.filter(item => results.includes(item.full_name));
     apps.forEach(item => item.verified = verified.includes(item.full_name));
 
-    process.stdout.write(JSON.stringify(apps));
+    console.log(JSON.stringify(apps));
 }
 
 async function fetchAllRepos(): Promise<Repo[]> {
