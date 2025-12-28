@@ -27,15 +27,15 @@ export default async (args: string[]) => {
 
     if (desktopTypes.length === 0) desktopTypes = ["share", "desktop"];
 
-    const appPath = `${homedir()}/.zhiva/apps/${name.split("/").pop()}`;
     let zhivaMeta = {
         name,
         icon: "default",
         win_icon: "default"
     };
 
-    if (existsSync(`${appPath}/zhiva.json`))
-        Object.assign(zhivaMeta, JSON.parse(readFileSync(`${appPath}/zhiva.json`, "utf-8")));
+    const zhivaJson = `${homedir()}/.zhiva/apps/${name}/zhiva.json`;
+    if (existsSync(zhivaJson))
+        Object.assign(zhivaMeta, JSON.parse(readFileSync(zhivaJson, "utf-8")));
 
     for (const path of desktopTypes) {
         createShortCut({
