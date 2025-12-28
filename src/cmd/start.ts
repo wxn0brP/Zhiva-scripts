@@ -128,6 +128,12 @@ async function start() {
             await import("../utils/static");
             return;
         }
+
+        if (config.url) {
+            const mod = await import("./open");
+            mod.default([config.url]);
+            return;
+        }
     }
 
     // --- NODE_PATH ---
