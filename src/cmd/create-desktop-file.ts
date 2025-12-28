@@ -33,9 +33,10 @@ export default async (args: string[]) => {
         win_icon: "default"
     };
 
-    const zhivaJson = `${homedir()}/.zhiva/apps/${name}/zhiva.json`;
-    if (existsSync(zhivaJson))
-        Object.assign(zhivaMeta, JSON.parse(readFileSync(zhivaJson, "utf-8")));
+    process.chdir("apps/" + name);
+
+    if (existsSync("zhiva.json"))
+        Object.assign(zhivaMeta, JSON.parse(readFileSync("zhiva.json", "utf-8")));
 
     for (const path of desktopTypes) {
         createShortCut({
