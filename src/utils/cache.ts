@@ -17,7 +17,7 @@ export async function getFromCache<T extends (...args: any) => any>(
     if (cached && cached.exp > Date.now())
         return cached.data;
 
-    const data = await getData(args);
+    const data = await getData(...args);
     await db.updateOneOrAdd("cache", { _id: name }, { data, exp: Date.now() + ttl });
 
     return data;
