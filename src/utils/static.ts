@@ -6,8 +6,14 @@ const zhiva = loadJson("zhiva.json") as {
         dirs: Record<string, string>;
         files: Record<string, string>;
         redirects: Record<string, string>;
+        vars: Record<string, string>;
     }
 };
+
+const vars = zhiva.static.vars || {};
+for (const [key, value] of Object.entries(vars)) {
+    app.setVar(key, value);
+}
 
 const redirects = zhiva.static.redirects || {};
 for (const [url, path] of Object.entries(redirects)) {
