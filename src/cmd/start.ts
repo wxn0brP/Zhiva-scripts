@@ -168,7 +168,7 @@ async function start() {
     });
 
     if (process.platform === "win32") {
-        import("../utils/hide");
+        import("../utils/hide").then(m => m.hideWindowsConsole());
     }
 }
 
