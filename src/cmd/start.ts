@@ -166,6 +166,10 @@ async function start() {
         console.error("Failed to start Bun:", err);
         process.exit(1);
     });
+
+    if (process.platform === "win32") {
+        import("../utils/hide");
+    }
 }
 
 start();
