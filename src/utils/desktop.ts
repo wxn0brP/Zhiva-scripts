@@ -1,6 +1,6 @@
 import { execSync } from "child_process";
-import { chmodSync, existsSync, mkdirSync, writeFileSync } from "fs";
-import { homedir } from "os";
+import { chmodSync, existsSync, mkdirSync, unlinkSync, writeFileSync } from "fs";
+import { homedir, tmpdir } from "os";
 import { join, resolve } from "path";
 
 export interface Opts {
@@ -52,7 +52,6 @@ ${icon ? `Icon=${icon}` : ""}
 
 export function createLnkFile(opts: Opts) {
     const shortName = getShortName(opts);
-    const bunPath = execSync("where bun").toString().trim();
 
     let path = opts.path || "desktop";
     switch (path) {
@@ -83,15 +82,26 @@ export function createLnkFile(opts: Opts) {
         iconPath = resolve(iconPath);
     }
 
-    const ps = `
-$WshShell = New-Object -ComObject WScript.Shell;
-$Shortcut = $WshShell.CreateShortcut('${shortcutPath}');
-$Shortcut.TargetPath = '${bunPath}';
-$Shortcut.Arguments = 'run "${process.env.USERPROFILE}\\.zhiva\\bin\\zhiva start" ${opts.name}';
-${iconPath ? `$Shortcut.IconLocation = '${iconPath}';` : ""}
-$Shortcut.Save();
-`.trim().split("\n").join(" ");
-    execSync(`powershell -NoProfile -ExecutionPolicy Bypass -Command "${ps}"`);
+    const psContent = `
+$WshShell = New-Object -ComObject WScript.Shell
+$Shortcut = $WshShell.CreateShortcut('${shortcutPath}')
+$Shortcut.TargetPath = "$env:ComSpec"
+$Shortcut.Arguments = "/c set _ZHIVA_BG=1 && %USERPROFILE%\\.zhiva\\bin\\zhiva.cmd start ${opts.name}"
+${iconPath ? `$Shortcut.IconLocation = '${iconPath}'` : ""}
+$Shortcut.WindowStyle = 7
+$Shortcut.Save()
+`.trim();
+
+    const tmpFile = join(tmpdir(), `zhiva_shortcut_${Date.now()}.ps1`);
+    writeFileSync(tmpFile, psContent, "utf8");
+
+    try {
+        execSync(`powershell -NoProfile -ExecutionPolicy Bypass -File "${tmpFile}"`, {
+            stdio: "inherit",
+        });
+    } finally {
+        unlinkSync(tmpFile);
+    }
     return shortcutPath;
 }
 
