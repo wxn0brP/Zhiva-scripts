@@ -12,7 +12,7 @@ const zhiva = loadJson("zhiva.json") as {
 
 const vars = zhiva.static.vars || {};
 for (const [key, value] of Object.entries(vars)) {
-    app.setVar(key, value);
+    app.setVar(key as any, value as any);
 }
 
 const redirects = zhiva.static.redirects || {};
