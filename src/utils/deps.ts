@@ -9,9 +9,20 @@ if (!existsSync("node_modules/@wxn0brp/zhiva-base-lib")) {
 }
 
 const cwd = process.cwd();
+let requireReqMods = false;
+
+function setRequireReqMods(stdout: Buffer<ArrayBufferLike>) {
+    if (requireReqMods) return;
+
+    const output = stdout.toString();
+    if (output.includes("package.json"))
+        requireReqMods = true;
+}
+
 try {
     process.chdir("node_modules/@wxn0brp/zhiva-base-lib");
-    await $`git pull`;
+    const { stdout } = await $`git pull`;
+    setRequireReqMods(stdout);
     copyPkgToReqMods("zhiva-base-lib");
 } catch (e) {
     console.error("Error updating Zhiva base-lib:", e);
@@ -22,10 +33,16 @@ try {
 console.log("[Z-SCR-3-02] 💜 Updating Zhiva scripts...");
 try {
     process.chdir("scripts");
-    await $`git pull`;
+    const { stdout } = await $`git pull`;
+    setRequireReqMods(stdout);
     copyPkgToReqMods("zhiva-scripts");
 } finally {
     process.chdir(cwd);
 }
-await installReqMods();
-console.log("[Z-SCR-3-03] 💜 Update dependencies completed");
+
+if (requireReqMods) {
+    console.log("[Z-SCR-3-03] 💜 Installing dependencies...");
+    await installReqMods();
+}
+
+console.log("[Z-SCR-3-04] 💜 Update dependencies completed");
