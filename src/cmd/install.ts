@@ -4,9 +4,11 @@ import { homedir } from "os";
 import { ensureAppName } from "../utils/appName";
 import { db } from "../utils/db";
 import { createShortCut } from "../utils/desktop";
-import { clone, getConfig } from "../utils/install";
+import { checkIsZhivaApp, clone, getConfig } from "../utils/install";
 import { getPref } from "../utils/pref";
 import { parseArgs } from "util";
+import { join } from "path";
+import { rm } from "fs/promises";
 
 export default async (args: string[]) => {
     const { values, positionals } = parseArgs({
@@ -45,10 +47,20 @@ export default async (args: string[]) => {
         if (name.startsWith("http") && name.endsWith(".git")) {
             await clone(name, appPath, branch);
             name = appPath;
+            if (!existsSync(join(name, "zhiva.json"))) {
+                console.error(`[Z-SCR-5-01] 💔 App ${name} is not a valid zhiva app`);
+                await rm(name, { force: true, recursive: true });
+                process.exit(1);
+            }
 
         } else {
             if (!branch) {
                 [name, branch] = await getConfig(name);
+            }
+
+            if (!await checkIsZhivaApp(name)) {
+                console.error(`[Z-SCR-5-02] 💔 App ${name} is not a valid zhiva app`);
+                process.exit(1);
             }
 
             await clone(`https://github.com/${name}.git`, name, branch);

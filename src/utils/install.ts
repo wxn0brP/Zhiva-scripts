@@ -53,3 +53,15 @@ export async function clone(cloneUrl: string, name: string, branch = "") {
         await $`git clone ${cloneUrl} ${name}`;
     }
 }
+
+export async function checkIsZhivaApp(name: string) {
+    const url = `https://raw.githubusercontent.com/${name}/HEAD/zhiva.json`;
+    try {
+        const res = await fetch(url);
+        const json = await res.json();
+        if (!json) return false;
+        return true;
+    } catch (e) {
+        return false;
+    }
+}
