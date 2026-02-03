@@ -14,6 +14,9 @@ _zhiva() {
     'self:Update Zhiva itself'
     'update:Update installed applications'
     'guess:Find app by name (fuzzy)'
+    'search:Search for apps'
+    'cdf:Create desktop file for an installed application'
+    'db:Interact with Zhiva database'
     'help:Show help message'
   )
 
@@ -26,6 +29,8 @@ _zhiva() {
     [update-self]=self [self-update]=self
     [u]=update [up]=update
     [find]=guess
+    [s]=search
+    [create-desktop-file]=cdf
   )
 
   cur=${words[CURRENT]}
@@ -46,7 +51,13 @@ _zhiva() {
         '(-d --deps)'{-d,--deps}'[Update dependencies mode]:mode:(0 1 2)' \
         '*:app name:_zhiva_guess'
       ;;
-    install|uninstall)
+    install)
+      _arguments -C \
+        '(-h --help)'{-h,--help}'[Show help]' \
+        '(-s --shortcut)'{-s,--shortcut}'[Control desktop shortcuts]:value:(m d md dm)' \
+        '*:app name:_zhiva_guess'
+      ;;
+    uninstall)
       _arguments -C \
         '(-h --help)'{-h,--help}'[Show help]' \
         '*:app name:_zhiva_guess'
@@ -64,6 +75,23 @@ _zhiva() {
       ;;
     guess)
       _arguments -C '*:app name:_zhiva_guess'
+      ;;
+    search)
+      _arguments -C \
+        '(-h --help)'{-h,--help}'[Show help]' \
+        '(-j --json)'{-j,--json}'[Output as JSON]' \
+        '(-p --pretty)'{-p,--pretty}'[Output as pretty JSON]' \
+        '*:query:_zhiva_guess'
+      ;;
+    cdf)
+      _arguments -C \
+        '(-h --help)'{-h,--help}'[Show help]' \
+        '*:app name:_zhiva_guess'
+      ;;
+    db)
+      _arguments -C \
+        '(-h --help)'{-h,--help}'[Show help]' \
+        '*:args: _normal'
       ;;
     help|*)
       _describe 'command' subcommands
