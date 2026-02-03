@@ -92,7 +92,7 @@ export default async (args: string[]) => {
 
     const shortCutPreference = await getPref<string>("shortcut");
     if (shortCutPreference)
-        zhivaMeta.shortcut = shortCutPreference;
+        zhivaMeta.shortcut = shortCutPreference.includes("n") ? "" : shortCutPreference;
 
     if (values.shortcut)
         zhivaMeta.shortcut = values.shortcut.includes("n") ? "" : values.shortcut;
