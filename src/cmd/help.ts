@@ -38,7 +38,10 @@ Command Details:
   install <app-name>          Install an application
     Aliases:  i, add
     Options:
-      --nd                    Do not create desktop shortcuts
+      --shortcut, -s <value>  Control desktop shortcuts
+         "m" - menu
+         "d" - desktop
+         or absolute path
 
     Examples:
       zhiva install Zhiva-store-app
@@ -93,18 +96,16 @@ Command Details:
       zhiva search
       zhiva search Zhiva-store-app
 
-  cdf <app-name>              Create desktop file for an installed application
+  cdf <app-name> <flags>      Create desktop file for an installed application
     Aliases:  cdf
-    Options:
-      -d, --desktop           Create desktop shortcut on Desktop
-      -s, --share             Create desktop shortcut in applications menu
-      If no option is specified, both desktop and share shortcuts will be created
+    Flags:
+      d                       Desktop
+      m                       Menu
 
     Examples:
       zhiva create-desktop-file Zhiva-store-app
-      zhiva cdf username/repo --desktop
-      zhiva cdf username/repo --share
-      zhiva cdf username/repo --desktop --share
+      zhiva cdf username/repo d
+      zhiva cdf username/repo dm
 
 `.trimStart());
 

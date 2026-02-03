@@ -5,6 +5,7 @@ import { db } from "../utils/db";
 import { createShortCut } from "../utils/desktop";
 
 export default async (args: string[]) => {
+    console.log(args)
     let name = args[0];
     if (!name) {
         console.error("Please provide an app name");
@@ -20,12 +21,14 @@ export default async (args: string[]) => {
         process.exit(1);
     }
 
-    let desktopTypes: string[] = [];
+    let flags = "";
 
-    if (args.includes("--desktop") || args.includes("-d")) desktopTypes.push("desktop");
-    if (args.includes("--share") || args.includes("-s")) desktopTypes.push("share");
+    const second = args[1];
+    if (second.includes("d")) flags += "d";
+    if (second.includes("m")) flags += "m";
+    if (["/", "\\", "~"].some(f => second.includes(f))) flags = second;
 
-    if (desktopTypes.length === 0) desktopTypes = ["share", "desktop"];
+    if (!flags.length) flags = "dm";
 
     let zhivaMeta = {
         name,
@@ -38,13 +41,11 @@ export default async (args: string[]) => {
     if (existsSync("zhiva.json"))
         Object.assign(zhivaMeta, JSON.parse(readFileSync("zhiva.json", "utf-8")));
 
-    for (const path of desktopTypes) {
-        createShortCut({
-            name,
-            appName: zhivaMeta.name,
-            path,
-            icon: zhivaMeta?.icon,
-            win_icon: zhivaMeta?.win_icon,
-        });
-    }
+    createShortCut({
+        name,
+        appName: zhivaMeta.name,
+        flags,
+        icon: zhivaMeta?.icon,
+        win_icon: zhivaMeta?.win_icon,
+    });
 }
