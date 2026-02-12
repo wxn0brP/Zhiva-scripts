@@ -1,14 +1,10 @@
 import { $ } from "bun";
-import { existsSync, mkdirSync, readFileSync } from "fs";
-import { homedir } from "os";
-import { ensureAppName } from "../utils/appName";
+import { existsSync, readFileSync } from "fs";
+import { parseArgs } from "util";
 import { db } from "../utils/db";
 import { createShortCut } from "../utils/desktop";
-import { checkIsZhivaApp, clone, getConfig } from "../utils/install";
 import { getPref } from "../utils/pref";
-import { parseArgs } from "util";
-import { join } from "path";
-import { rm } from "fs/promises";
+import { ensueFiles } from "../install";
 
 export default async (args: string[]) => {
     const { values, positionals } = parseArgs({
@@ -19,55 +15,14 @@ export default async (args: string[]) => {
         allowPositionals: true,
     });
 
-    let name = positionals[0];
-    if (!name) {
+    if (!positionals[0]) {
         console.error("Please provide an app name");
         process.exit(1);
     }
 
-    name = ensureAppName(name);
-    let branch: string | undefined = undefined;
-    [name, branch] = name.split("#");
-
-    process.chdir(`${homedir()}/.zhiva`);
-    if (!existsSync("apps")) mkdirSync("apps", { recursive: true });
-    process.chdir("apps");
-
-    let appPath = name;
-    if (name.startsWith("http") && name.endsWith(".git")) {
-        appPath = new URL(name.replace(".git", "")).pathname.split("/").slice(-2).join("/");
-    }
-
-    if (existsSync(appPath)) {
-        process.chdir(appPath);
-        await $`git pull`;
-        name = appPath;
-
-    } else {
-        if (name.startsWith("http") && name.endsWith(".git")) {
-            await clone(name, appPath, branch);
-            name = appPath;
-            if (!existsSync(join(name, "zhiva.json"))) {
-                console.error(`[Z-SCR-5-01] 💔 App ${name} is not a valid zhiva app`);
-                await rm(name, { force: true, recursive: true });
-                process.exit(1);
-            }
-
-        } else {
-            if (!branch) {
-                [name, branch] = await getConfig(name);
-            }
-
-            if (!await checkIsZhivaApp(name)) {
-                console.error(`[Z-SCR-5-02] 💔 App ${name} is not a valid zhiva app`);
-                process.exit(1);
-            }
-
-            await clone(`https://github.com/${name}.git`, name, branch);
-        }
-
-        process.chdir(name);
-    }
+    const { dir, name } = await ensueFiles(positionals[0]);
+    if (dir)
+        process.chdir(dir);
 
     if (existsSync("package.json")) {
         await $`bun install --production --force`;
@@ -109,4 +64,6 @@ export default async (args: string[]) => {
             win_icon: zhivaMeta?.win_icon,
         });
     }
+
+    console.log(`[Z-SCR-11-01] 💜 Installed ${name}`);
 }

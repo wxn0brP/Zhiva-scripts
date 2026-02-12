@@ -1,6 +1,7 @@
 import { $ } from "bun";
-import { readFileSync } from "fs";
+import { existsSync, readFileSync } from "fs";
 import { homedir } from "os";
+import { join } from "path";
 import { db } from "../utils/db";
 
 export async function checkRepos(repos: string[], jsonMode) {
@@ -9,6 +10,11 @@ export async function checkRepos(repos: string[], jsonMode) {
     await Promise.all(
         repos.map(async (repo) => {
             try {
+                if (!existsSync(join(repo, ".git"))) {
+                    results.set(repo, false);
+                    return;
+                }
+
                 await $`git -C ${repo} fetch --quiet`;
 
                 const out = (await $`git -C ${repo} rev-list --count HEAD..@{u}`.text()).trim();
