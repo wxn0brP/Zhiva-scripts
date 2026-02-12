@@ -2,17 +2,9 @@ import { $ } from "bun";
 import { existsSync, mkdirSync } from "fs";
 import { cp, readdir, rm } from "fs/promises";
 import { homedir } from "os";
-import { dirname, extname, join, parse } from "path";
+import { join, parse } from "path";
 
-export const extensions = [
-    ".zip",
-    ".tar.gz",
-    ".tar.bz2",
-    ".tar.xz",
-    ".7z",
-];
-
-export const commands = {
+export const extensionsCmd = {
     ".zip": "unzip",
     ".tar.gz": "tar -xvf",
     ".tar.bz2": "tar -xvf",
@@ -44,9 +36,9 @@ async function findZhivaFile(path: string) {
     return null;
 }
 
-export async function downloadAndExtract(urlOrFile: string, prevCwd: string) {
+export async function downloadAndExtract(urlOrFile: string, previousCwd: string) {
     const isUrl = urlOrFile.startsWith("http");
-    const file = isUrl ? await downloadFileIsNeeded(urlOrFile) : join(prevCwd, urlOrFile);
+    const file = isUrl ? await downloadFileIsNeeded(urlOrFile) : join(previousCwd, urlOrFile);
 
     if (!existsSync(file)) {
         console.error("[Z-SCR-10-01] File not found at", file);
@@ -55,7 +47,7 @@ export async function downloadAndExtract(urlOrFile: string, prevCwd: string) {
 
     const { name, ext: extension } = parse(file);
 
-    if (!extensions.includes(extension)) {
+    if (!Object.keys(extensionsCmd).includes(extension)) {
         console.error("[Z-SCR-10-02] Invalid file extension:", extension);
         process.exit(1);
     }
@@ -69,7 +61,7 @@ export async function downloadAndExtract(urlOrFile: string, prevCwd: string) {
     mkdirSync(zhivaTempDir, { recursive: true });
 
     process.chdir(zhivaTempDir);
-    await $`${commands[extension]} ${file}`;
+    await $`${extensionsCmd[extension]} ${file}`;
 
     const zhivaDir = await findZhivaFile(zhivaTempDir);
     if (!zhivaDir) {
@@ -81,6 +73,8 @@ export async function downloadAndExtract(urlOrFile: string, prevCwd: string) {
 
     await cp(zhivaDir, join(zhivaBaseApps, name), { recursive: true });
     await rm(zhivaTempDir, { recursive: true, force: true });
+
+    console.log(`[Z-SCR-10-05] Copied ${join(zhivaBaseApps, name)}`);
 
     return name;
 }
