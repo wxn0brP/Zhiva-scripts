@@ -3,6 +3,7 @@ import { homedir } from "os";
 import { join } from "path";
 
 process.chdir(join(homedir(), ".zhiva"));
+process.env.ZHIVA_FORCE_INSTALL_DEPS = "true";
 for (const name of ["deps", "engine"]) {
     await import("../utils/" + name);
 }

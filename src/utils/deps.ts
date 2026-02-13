@@ -40,7 +40,7 @@ try {
     process.chdir(cwd);
 }
 
-if (requireReqMods) {
+if (requireReqMods || process.env.ZHIVA_FORCE_INSTALL_DEPS === "true") {
     console.log("[Z-SCR-3-03] 💜 Installing dependencies...");
     await installReqMods();
 }
