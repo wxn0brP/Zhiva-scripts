@@ -1,7 +1,7 @@
 {
 	"dependencies": {
 		"@wxn0brp/db": "^0.42.0",
-		"@wxn0brp/db-lock": "^0.0.3"
+		"@wxn0brp/db-lock": "^0.0.5"
 	},
 	"devDependencies": {
 		"@types/bun": "*",
