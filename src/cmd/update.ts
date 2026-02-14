@@ -1,10 +1,10 @@
-import { $ } from "bun";
+import { $, spawn } from "bun";
 import { existsSync, readFileSync } from "fs";
 import { homedir } from "os";
 import { join } from "path";
 import { db } from "../utils/db";
 
-export async function checkRepos(repos: string[], jsonMode) {
+export async function checkRepos(repos: string[], jsonMode = false) {
     const results = new Map<string, boolean>();
 
     await Promise.all(
@@ -15,7 +15,19 @@ export async function checkRepos(repos: string[], jsonMode) {
                     return;
                 }
 
-                await $`git -C ${repo} fetch --quiet`;
+                const proc = spawn(
+                    ["git", "-C", repo, "fetch", "--quiet"],
+                    {
+                        stdout: "ignore",
+                        stderr: "ignore",
+                    }
+                );
+
+                const exitCode = await proc.exited;
+                if (exitCode !== 0) {
+                    results.set(repo, false);
+                    return;
+                }
 
                 const out = (await $`git -C ${repo} rev-list --count HEAD..@{u}`.text()).trim();
                 const needsUpdate = +out > 0;
