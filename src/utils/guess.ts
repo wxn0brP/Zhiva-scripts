@@ -1,7 +1,7 @@
 import { db } from "./db";
 
 export async function guessApp(name: string): Promise<string[]> {
-    const pkgs = await db.find("apps");
+    const pkgs = await db.apps.find();
     const names = pkgs.map((pkg) => pkg.name);
 
     return _guessApp(name, names);

@@ -36,10 +36,11 @@ export default async (args: string[]) => {
     const jsonMode = args.includes("--json");
     process.chdir(`${homedir()}/.zhiva/apps`);
 
-    const apps = await db.find("apps").then((apps) => apps.map((app) => app.name));
+    const apps = await db.apps.find();
+    const appNames = apps.map((app) => app.name);
     if (!jsonMode) console.log("[Z-SCR-8-01] Checking apps...");
 
-    const update = await checkRepos(apps, jsonMode);
+    const update = await checkRepos(appNames, jsonMode);
 
     if (jsonMode) {
         console.log(JSON.stringify(Object.fromEntries(update)));

@@ -83,7 +83,7 @@ if (appName === "init") {
 }
 
 if (!appName) {
-    const apps = await db.find("apps");
+    const apps = await db.apps.find();
     const appNames = apps.map((app: any) => app.name);
     appName = await interactiveAppSelect(appNames);
     if (appName === "Cancel") process.exit(1);

@@ -15,7 +15,7 @@ export default async (args: string[]) => {
     name = ensureAppName(name);
 
     process.chdir(`${homedir()}/.zhiva`);
-    const appData = await db.findOne("apps", { name });
+    const appData = await db.apps.findOne({ name });
     if (!appData) {
         console.error(`App ${name} is not installed`);
         process.exit(1);

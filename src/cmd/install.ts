@@ -32,7 +32,7 @@ export default async (args: string[]) => {
         }
     }
 
-    const updated = await db.updateOneOrAdd("apps", { name }, { updatedAt: Date.now() });
+    const updated = await db.apps.updateOneOrAdd({ name }, { updatedAt: Date.now() });
 
     const zhivaMeta = {
         name,

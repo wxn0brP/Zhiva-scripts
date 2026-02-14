@@ -31,7 +31,7 @@ export default async (args: string[]) => {
     }
 
     try {
-        await db.removeOne("apps", { name });
+        await db.apps.removeOne({ name });
     } catch (error) {
         console.error(`Error removing app ${name} from database: ${error.message}`);
         process.exit(1);

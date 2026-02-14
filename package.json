@@ -1,10 +1,10 @@
 {
-	"dependencies": {
-		"@wxn0brp/db": "^0.42.0",
-		"@wxn0brp/db-lock": "^0.0.3"
-	},
-	"devDependencies": {
-		"@types/bun": "*",
-		"@wxn0brp/zhiva-base-lib": "github:wxn0brP/Zhiva-base-lib"
-	}
+    "dependencies": {
+        "@wxn0brp/db": "^0.70.0",
+        "@wxn0brp/db-lock": "^0.0.7"
+    },
+    "devDependencies": {
+        "@types/bun": "*",
+        "@wxn0brp/zhiva-base-lib": "github:wxn0brP/Zhiva-base-lib"
+    }
 }

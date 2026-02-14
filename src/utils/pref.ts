@@ -6,6 +6,6 @@ export interface Preference<T = any> {
 }
 
 export async function getPref<T = any>(name: string): Promise<T> {
-    const pref = await db.findOne<Preference<T>>("pref", { _id: name });
+    const pref = await db.pref.findOne({ _id: name });
     return pref?.v;
 }

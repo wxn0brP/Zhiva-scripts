@@ -1,6 +1,6 @@
 import { db } from "../utils/db";
 
-const apps = await db.find("apps");
+const apps = await db.apps.find();
 
 export default (args: string[]) => {
     const json = args.includes("--json");
