@@ -97,7 +97,7 @@ Command Details:
       zhiva search Zhiva-store-app
 
   cdf <app-name> <flags>      Create desktop file for an installed application
-    Aliases:  cdf
+    Aliases:  create-desktop-file
     Flags:
       d                       Desktop
       m                       Menu
