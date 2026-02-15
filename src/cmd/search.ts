@@ -1,5 +1,6 @@
 import { getFromCache } from "../utils/cache";
 import { _guessApp } from "../utils/guess";
+import { db } from "../utils/db";
 
 interface Repo {
     name: string;
@@ -17,7 +18,13 @@ export default async (args: string[]) => {
     const banned = await getFromCache("banned", 5 * 60 * 1000, fetchBanned);
 
     apps = apps.filter(item => !banned.includes(item.name));
-    const results = await _guessApp(name, apps.map(item => item.name));
+
+    const localApps = await db.apps.find();
+    const localAppNames = localApps.map(app => app.name);
+
+    const allAppNames = [...new Set([...apps.map(item => item.name), ...localAppNames])];
+
+    const results = await _guessApp(name, allAppNames);
 
     if (!jsonMode && !prettyMode) {
         console.log(results.join("\n"));
@@ -34,9 +41,21 @@ export default async (args: string[]) => {
     );
 
     apps = apps.filter(item => results.includes(item.name));
-    apps.forEach(item => item.verified = verified.includes(item.name));
 
-    console.log(JSON.stringify(apps, null, prettyMode ? 2 : undefined));
+    const localAppsToAdd = localApps
+        .filter(localApp => results.includes(localApp.name) && !apps.some(regApp => regApp.name === localApp.name))
+        .map(localApp => ({
+            name: localApp.name,
+            desc: "Locally installed app",
+            stars: 0,
+            verified: false
+        }));
+
+    const combinedApps = [...apps, ...localAppsToAdd];
+
+    combinedApps.forEach(item => item.verified = verified.includes(item.name));
+
+    console.log(JSON.stringify(combinedApps, null, prettyMode ? 2 : undefined));
 }
 
 async function fetchAllRepos(): Promise<Repo[]> {
