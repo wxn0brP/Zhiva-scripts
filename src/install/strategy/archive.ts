@@ -1,5 +1,5 @@
 import { existsSync } from "fs";
-import { parse, resolve } from "path";
+import { resolve } from "path";
 import { InstallationStrategy } from "../types";
 import { chdirToApps } from "../utils";
 import { downloadAndExtract, extensionsCmd } from "../utils/archive";
@@ -10,7 +10,16 @@ export function isArchiveInput(input: string) {
 
 export const archiveStrategy: InstallationStrategy = async (context) => {
 	const { input, previousCwd: prevCwd } = context;
-	let name = "archive/" + parse(input).name;
+
+	let name = context.name;
+	if (!name) {
+		console.error("Please provide an app name");
+		console.error("Usage: zhiva install <file.zip> -n <name>");
+		process.exit(1);
+	}
+
+	if (!name.includes("/"))
+		name = `archive/${name}`;
 
 	chdirToApps();
 
@@ -19,7 +28,7 @@ export const archiveStrategy: InstallationStrategy = async (context) => {
 	if (existsSync(appPath))
 		return { name, dir: appPath };
 
-	name = "archive/" + await downloadAndExtract(input, prevCwd);
+	await downloadAndExtract(input, prevCwd, name);
 
 	return {
 		name,

@@ -8,7 +8,7 @@ import { checkIsZhivaApp, clone, getConfig } from "../utils/git";
 
 export const namedGitStrategy: InstallationStrategy = async (context) => {
     const { input } = context;
-    let name = ensureAppName(input);
+    let name = context.name || ensureAppName(input);
 
     chdirToApps();
 
@@ -21,20 +21,19 @@ export const namedGitStrategy: InstallationStrategy = async (context) => {
             await $`git pull`;
         return { name };
     } else {
-        let branch: string;
         const [appName, branchParam] = input.split("#");
 
         const resolvedName = ensureAppName(appName);
-        [name, branch] = branchParam
+        const [repo, branch] = branchParam
             ? [resolvedName, branchParam]
             : await getConfig(resolvedName);
 
-        if (!(await checkIsZhivaApp(name))) {
-            console.error(`[Z-SCR-5-03] 💔 App ${name} is not a valid zhiva app`);
+        if (!(await checkIsZhivaApp(repo))) {
+            console.error(`[Z-SCR-5-03] 💔 App ${repo} is not a valid zhiva app`);
             process.exit(1);
         }
 
-        await clone(`https://github.com/${name}.git`, name, branch);
+        await clone(`https://github.com/${repo}.git`, name, branch);
 
         return {
             name,

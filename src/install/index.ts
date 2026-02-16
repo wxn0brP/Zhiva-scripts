@@ -5,7 +5,7 @@ import {
     isHttpGitInput,
     namedGitStrategy,
 } from "./strategy";
-import { InstallationContext, InstallationStrategy } from "./types";
+import { InstallationContext, InstallationStrategy, InstallOptions } from "./types";
 
 function getStrategy(input: string) {
     const strategies: Array<[(input: string) => boolean, InstallationStrategy]> = [
@@ -22,11 +22,12 @@ function getStrategy(input: string) {
     }
 }
 
-export async function ensueFiles(input: string) {
+export async function ensueFiles(input: string, options: InstallOptions) {
     const prevCwd = process.cwd();
     const context: InstallationContext = {
         input,
         previousCwd: prevCwd,
+        ...options,
     };
 
     const strategy = getStrategy(input);

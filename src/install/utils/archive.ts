@@ -1,8 +1,8 @@
 import { $ } from "bun";
 import { existsSync, mkdirSync } from "fs";
-import { cp, readdir, rm } from "fs/promises";
+import { cp, mkdir, readdir, rm } from "fs/promises";
 import { homedir } from "os";
-import { join, parse } from "path";
+import { extname, join } from "path";
 
 export const extensionsCmd = {
     ".zip": "unzip",
@@ -22,7 +22,7 @@ async function downloadFileIsNeeded(rawUrl: string) {
     return fileName;
 }
 
-async function findZhivaFile(path: string) {
+async function findZhivaFile(path: string): Promise<string | null> {
     const curr = join(path, "zhiva.json");
     if (existsSync(curr)) return path;
 
@@ -36,7 +36,7 @@ async function findZhivaFile(path: string) {
     return null;
 }
 
-export async function downloadAndExtract(urlOrFile: string, previousCwd: string) {
+export async function downloadAndExtract(urlOrFile: string, previousCwd: string, name: string) {
     const isUrl = urlOrFile.startsWith("http");
     const file = isUrl ? await downloadFileIsNeeded(urlOrFile) : join(previousCwd, urlOrFile);
 
@@ -45,15 +45,15 @@ export async function downloadAndExtract(urlOrFile: string, previousCwd: string)
         process.exit(1);
     }
 
-    const { name, ext: extension } = parse(file);
+    const extension = extname(file);
 
     if (!Object.keys(extensionsCmd).includes(extension)) {
         console.error("[Z-SCR-10-02] Invalid file extension:", extension);
         process.exit(1);
     }
 
-    const zhivaBaseApps = join(homedir(), ".zhiva", "apps", "archive");
-    const zhivaTempDir = join(zhivaBaseApps, "temp");
+    const zhivaBaseApps = join(homedir(), ".zhiva", "apps");
+    const zhivaTempDir = join(zhivaBaseApps, "archive", "temp");
 
     if (existsSync(zhivaTempDir))
         await rm(zhivaTempDir, { recursive: true, force: true });
@@ -71,10 +71,11 @@ export async function downloadAndExtract(urlOrFile: string, previousCwd: string)
 
     console.log(`[Z-SCR-10-04] Extracted to ${zhivaDir}`);
 
-    await cp(zhivaDir, join(zhivaBaseApps, name), { recursive: true });
+    const targetDir = join(zhivaBaseApps, name);
+    await mkdir(targetDir, { recursive: true });
+
+    await cp(zhivaDir, targetDir, { recursive: true });
     await rm(zhivaTempDir, { recursive: true, force: true });
 
-    console.log(`[Z-SCR-10-05] Copied ${join(zhivaBaseApps, name)}`);
-
-    return name;
+    console.log(`[Z-SCR-10-05] Copied ${targetDir}`);
 }

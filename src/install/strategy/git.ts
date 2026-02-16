@@ -13,12 +13,14 @@ export function isHttpGitInput(input: string) {
 
 export const httpGitStrategy: InstallationStrategy = async (context) => {
 	const { input } = context;
-	let name = ensureAppName(input);
 
 	chdirToApps();
 
 	const split = input.split("#"); // name # branch
-	name = split[0].split("/").slice(-2).join("/").replace(".git", "");
+	let name =
+		context.name ||
+		split[0].split("/").slice(-2).join("/").replace(".git", "");
+
 	const appPath = resolve(name);
 
 	if (existsSync(appPath)) {

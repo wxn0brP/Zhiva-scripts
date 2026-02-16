@@ -11,6 +11,7 @@ export default async (args: string[]) => {
         args,
         options: {
             shortcut: { type: "string", short: "s" },
+            name: { type: "string", short: "n" },
         },
         allowPositionals: true,
     });
@@ -20,7 +21,10 @@ export default async (args: string[]) => {
         process.exit(1);
     }
 
-    const { dir, name } = await ensueFiles(positionals[0]);
+    const { dir, name } = await ensueFiles(positionals[0], {
+        name: values.name || "",
+    });
+
     if (dir)
         process.chdir(dir);
 

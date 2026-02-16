@@ -3,7 +3,11 @@ export interface InstallationResult {
 	dir?: string;
 }
 
-export interface InstallationContext {
+export interface InstallOptions {
+	name: string;
+}
+
+export interface InstallationContext extends InstallOptions {
 	input: string;
 	previousCwd: string;
 }
