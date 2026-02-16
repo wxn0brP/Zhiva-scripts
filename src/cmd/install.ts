@@ -53,7 +53,7 @@ export default async (args: string[]) => {
         zhivaMeta.shortcut = values.shortcut.includes("n") ? "" : values.shortcut;
 
     if (
-        !updated &&
+        updated.type === "added" &&
         zhivaMeta.shortcut?.length
     ) {
         createShortCut({
