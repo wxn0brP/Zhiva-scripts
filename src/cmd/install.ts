@@ -36,7 +36,7 @@ export default async (args: string[]) => {
         }
     }
 
-    const updated = await db.apps.updateOneOrAdd({ name }, { updatedAt: Date.now() });
+    const updated = await db.apps.updateOneOrAdd({ name }, { updatedAt: Date.now() }, { id_gen: false });
 
     const zhivaMeta = {
         name,
