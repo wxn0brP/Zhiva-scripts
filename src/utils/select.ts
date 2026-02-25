@@ -1,7 +1,10 @@
 export async function interactiveAppSelect(apps: string[]): Promise<string | null> {
-    if (apps.length === 0) {
+    if (apps.length === 0)
         return Promise.resolve(null);
-    }
+
+    if (apps.length === 1)
+        return Promise.resolve(apps[0]);
+
     apps = apps.filter(o => o.includes("/"));
 
     return new Promise(resolve => {
@@ -13,70 +16,51 @@ export async function interactiveAppSelect(apps: string[]): Promise<string | nul
             stdin.pause();
         };
 
-        let onData: (key: string) => void;
+        let selectedIndex = 0;
+        let hasRendered = false;
+        apps.push("Cancel");
 
-        if (apps.length === 1) {
-            process.stdout.write(`[Z-SCR-2-05] App not found. Did you mean "${apps[0]}"? [Y/n] `);
-
-            onData = (key: string) => {
-                const k = key.toLowerCase();
-                if (k === "y" || key === "\r") { // Enter
-                    process.stdout.write("\n");
-                    cleanup();
-                    resolve(apps[0]);
-                } else if (k === "n" || key === "\u0003") { // Ctrl+C
-                    process.stdout.write("\nAborted.\n");
-                    cleanup();
-                    resolve(null);
+        const render = () => {
+            if (hasRendered) {
+                for (let i = 0; i < apps.length + 1; i++) {
+                    process.stdout.write("\u001b[1A\u001b[K");
                 }
-            };
-        } else {
-            let selectedIndex = 0;
-            let hasRendered = false;
-            apps.push("Cancel");
+            }
+            hasRendered = true;
 
-            const render = () => {
-                if (hasRendered) {
-                    for (let i = 0; i < apps.length + 1; i++) {
-                        process.stdout.write("\u001b[1A\u001b[K");
-                    }
+            process.stdout.write(`[Z-SCR-2-06] App not found. Did you mean one of these? (Use arrows, Enter to select)\n`);
+            apps.forEach((option, i) => {
+                const isSelected = i === selectedIndex;
+                const prefix = isSelected ? "> " : "  ";
+                process.stdout.write(`${prefix}${option}\n`);
+            });
+        };
+
+        const onData = (key: string) => {
+            if (key === "\u0003") { // Ctrl+C
+                cleanup();
+                process.stdout.write("\nAborted.\n");
+                resolve(null);
+                return;
+            }
+            if (key === "\r") { // Enter
+                cleanup();
+                for (let i = 0; i < apps.length + 1; i++) {
+                    process.stdout.write("\u001b[1A\u001b[K");
                 }
-                hasRendered = true;
+                resolve(apps[selectedIndex]);
+                return;
+            }
 
-                process.stdout.write(`[Z-SCR-2-06] App not found. Did you mean one of these? (Use arrows, Enter to select)\n`);
-                apps.forEach((option, i) => {
-                    const isSelected = i === selectedIndex;
-                    const prefix = isSelected ? "> " : "  ";
-                    process.stdout.write(`${prefix}${option}\n`);
-                });
-            };
-
-            onData = (key: string) => {
-                if (key === "\u0003") { // Ctrl+C
-                    cleanup();
-                    process.stdout.write("\nAborted.\n");
-                    resolve(null);
-                    return;
-                }
-                if (key === "\r") { // Enter
-                    cleanup();
-                    for (let i = 0; i < apps.length + 1; i++) {
-                        process.stdout.write("\u001b[1A\u001b[K");
-                    }
-                    resolve(apps[selectedIndex]);
-                    return;
-                }
-
-                if (key === "\u001b[A") { // Up arrow
-                    selectedIndex = (selectedIndex > 0) ? selectedIndex - 1 : apps.length - 1;
-                } else if (key === "\u001b[B") { // Down arrow
-                    selectedIndex = (selectedIndex < apps.length - 1) ? selectedIndex + 1 : 0;
-                }
-                render();
-            };
-
+            if (key === "\u001b[A") { // Up arrow
+                selectedIndex = (selectedIndex > 0) ? selectedIndex - 1 : apps.length - 1;
+            } else if (key === "\u001b[B") { // Down arrow
+                selectedIndex = (selectedIndex < apps.length - 1) ? selectedIndex + 1 : 0;
+            }
             render();
-        }
+        };
+
+        render();
 
         stdin.setRawMode(true);
         stdin.resume();
