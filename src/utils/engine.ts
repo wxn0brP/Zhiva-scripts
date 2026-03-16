@@ -6,6 +6,8 @@ const baseLink = "https://github.com/wxn0brP/Zhiva-native/releases/download/nati
 const nv = "zhiva.nv.txt";
 
 export async function checkEngine() {
+    const zhivaLocal = `zhiva${platform === "win32" ? ".exe" : ""}`;
+
     try {
         const serverVersion = await fetch(baseLink + nv).then(res => res.text());
         if (existsSync(nv) && readFileSync(nv, "utf-8").trim() === serverVersion.trim()) {
@@ -14,13 +16,13 @@ export async function checkEngine() {
 
         console.log("[Z-SCR-4-02] Downloading Zhiva...");
         const zhivaServer = `zhiva-${platform}${platform === "win32" ? ".exe" : ""}`;
-        const zhivaLocal = `zhiva${platform === "win32" ? ".exe" : ""}`;
         await $`curl -L ${baseLink}${zhivaServer} -o ${zhivaLocal}`;
         writeFileSync(nv, serverVersion);
         if (platform !== "win32") await $`chmod +x zhiva`;
     } catch (e) {
         console.error("Error downloading/updating Zhiva:", e);
-        if (!existsSync("zhiva")) process.exit(1);
+        if (!existsSync(zhivaLocal))
+            process.exit(1);
     }
 }
 
