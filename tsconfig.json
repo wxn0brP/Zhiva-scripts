@@ -6,9 +6,13 @@
         "paths": {},
         "esModuleInterop": true,
         "skipLibCheck": true,
-        "outDir": "./dist",
+        "noEmit": true,
         "inlineSourceMap": false,
-        "declaration": true,
+        "rootDir": "./src",
+        "strict": false,
+        "types": [
+            "bun-types"
+        ]
     },
     "include": [
         "src"
