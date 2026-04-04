@@ -55,7 +55,18 @@ function shouldCheck(mode: number, last: number) {
 }
 
 async function handleComponent(name: string) {
-    const mode = parseInt(values[name] ?? "0", 10);
+    let mode = 0;
+    const raw = values[name];
+    const cli = raw !== undefined ? Number(raw) : NaN;
+
+    if (!Number.isNaN(cli)) {
+        mode = cli;
+    } else {
+        const data = await db.pref.findOne({ _id: name });
+        if (data.v)
+            mode = +data.v;
+    }
+
     const doCheck = shouldCheck(mode, latestCheck);
 
     if (!doCheck) {
