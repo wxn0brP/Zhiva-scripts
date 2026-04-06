@@ -63,7 +63,7 @@ async function handleComponent(name: string) {
         mode = cli;
     } else {
         const data = await db.pref.findOne({ _id: name });
-        if (data.v)
+        if (data?.v)
             mode = +data.v;
     }
 
