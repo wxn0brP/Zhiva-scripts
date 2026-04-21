@@ -2,7 +2,6 @@ import { $ } from "bun";
 import { existsSync } from "fs";
 import { rm } from "fs/promises";
 import { join, resolve } from "path";
-import { ensureAppName } from "../../utils/appName";
 import { InstallationStrategy } from "../types";
 import { chdirToApps } from "../utils";
 import { clone } from "../utils/git";
@@ -19,7 +18,7 @@ export const httpGitStrategy: InstallationStrategy = async (context) => {
 	const split = input.split("#"); // name # branch
 	let name =
 		context.name ||
-		split[0].split("/").slice(-2).join("/").replace(".git", "");
+		split[0].split("/").slice(-2).join("/").replace(".git", "") + (split[1] ? "#" + split[1] : "");
 
 	const appPath = resolve(name);
 

@@ -17,6 +17,7 @@ function getStrategy(input: string) {
 
     for (const [condition, strategy] of strategies) {
         if (condition(input)) {
+            console.log(`[Z-SCR-5-01] 💜 Using ${strategy.name} strategy`);
             return strategy;
         }
     }
