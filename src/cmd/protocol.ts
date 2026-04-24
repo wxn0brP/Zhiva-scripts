@@ -36,7 +36,7 @@ export default async (args: string[]) => {
         command = "start";
     }
 
-    spawnZhiva(command, arg).unref();
+    spawnZhiva(command, arg);
 }
 
 function spawnZhiva(command: string, arg: string) {
@@ -50,6 +50,8 @@ function spawnZhiva(command: string, arg: string) {
 
     console.log(`[Z-SRC-9-04] 💜 Executing`, spawnArgs);
     return spawn(spawnArgs, {
-        env: process.env
+        env: process.env,
+        stdout: "inherit",
+        stderr: "inherit",
     });
 }
