@@ -1,4 +1,5 @@
 import { spawn } from "bun";
+import { delimiter, dirname } from "path";
 
 export default async (args: string[]) => {
     if (!args.length) {
@@ -12,18 +13,33 @@ export default async (args: string[]) => {
         process.exit(1);
     }
 
-    const [command, ...urlArgs] = rawArg.slice("zhiva://".length).split("/");
+    let [command, ...urlArgs] = rawArg.slice("zhiva://".length).split("/");
     const arg = urlArgs.join("/");
 
     console.log(`[Z-SCR-9-03] 💜 Executing ${command} ${arg}...`);
     process.argv.splice(2, 1);
 
-    const supportedCommands = ["start", "install", "open"];
+    const supportedCommands = ["start", "install", "open", "install+start"];
     if (!supportedCommands.includes(command)) {
         console.error("Invalid command");
         process.exit(1);
     }
 
+    const bunDir = dirname(process.argv[0]);
+    process.env.PATH = `${process.env.PATH}${delimiter}${bunDir}`;
+
+    if (command === "install+start") {
+        const proc = spawnZhiva("install", arg);
+        await proc.exited;
+        if (proc.exitCode !== 0)
+            process.exit(proc.exitCode);
+        command = "start";
+    }
+
+    spawnZhiva(command, arg).unref();
+}
+
+function spawnZhiva(command: string, arg: string) {
     const spawnArgs = [
         process.argv[0],
         "run",
@@ -32,6 +48,8 @@ export default async (args: string[]) => {
         arg
     ];
 
-    console.log(`[z-SRC-9-04] 💜 Executing`, spawnArgs);
-    spawn(spawnArgs);
+    console.log(`[Z-SRC-9-04] 💜 Executing`, spawnArgs);
+    return spawn(spawnArgs, {
+        env: process.env
+    });
 }
