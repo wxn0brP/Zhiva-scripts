@@ -1,6 +1,6 @@
 {
     "dependencies": {
-        "@wxn0brp/db": "~0.100.0",
+        "@wxn0brp/db": "~0.110.0",
         "@wxn0brp/db-core": "~0.10.1",
         "@wxn0brp/db-lock": "~0.100.0"
     },
