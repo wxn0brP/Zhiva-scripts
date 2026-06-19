@@ -1,7 +1,7 @@
 import { spawn } from "child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 import { homedir } from "os";
-import { delimiter, isAbsolute, join, resolve } from "path";
+import { basename, delimiter, isAbsolute, join, resolve } from "path";
 import { parseArgs } from "util";
 import { ensureAppName } from "../utils/appName";
 import { guessApp } from "../utils/guess";
@@ -158,6 +158,13 @@ async function start() {
 
     process.env.PATH = `${process.env.PATH}${delimiter}${join(HOME, ".bun/bin")}`;
 
+    const appId = isAbsolute(appName) || appName === "." ? basename(appPath) + ".zhiva.dev.app.local" : appName;
+    const sanitizedAppId = appId
+        .replaceAll("/", ".")
+        .replaceAll(" ", ".")
+        // trim dot
+        .replace(/^\.|\.$/g, "");
+
     // --- Run Bun ---
     const bun = spawn(
         "bun",
@@ -167,6 +174,7 @@ async function start() {
             env: {
                 ...process.env,
                 ZHIVA_ROOT: zhivaPath,
+                ZHIVA_APP_ID: sanitizedAppId,
                 NODE_PATH: nodePath
             }
         }
