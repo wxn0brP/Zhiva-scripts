@@ -3,10 +3,10 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 import { homedir } from "os";
 import { basename, delimiter, isAbsolute, join, resolve } from "path";
 import { parseArgs } from "util";
-import { ensureAppName } from "../utils/appName";
+import { ensureAppName, normalizeAppId } from "../utils/appName";
+import { db } from "../utils/db";
 import { guessApp } from "../utils/guess";
 import { interactiveAppSelect } from "../utils/select";
-import { db } from "../utils/db";
 
 // --- Args ---
 const { values, positionals } = parseArgs({
@@ -159,11 +159,6 @@ async function start() {
     process.env.PATH = `${process.env.PATH}${delimiter}${join(HOME, ".bun/bin")}`;
 
     const appId = isAbsolute(appName) || appName === "." ? basename(appPath) + ".zhiva.dev.app.local" : appName;
-    const sanitizedAppId = appId
-        .replaceAll("/", ".")
-        .replaceAll(" ", ".")
-        // trim dot
-        .replace(/^\.|\.$/g, "");
 
     // --- Run Bun ---
     const bun = spawn(
@@ -174,7 +169,7 @@ async function start() {
             env: {
                 ...process.env,
                 ZHIVA_ROOT: zhivaPath,
-                ZHIVA_APP_ID: sanitizedAppId,
+                ZHIVA_APP_ID: normalizeAppId(appId),
                 NODE_PATH: nodePath
             }
         }
