@@ -7,6 +7,6 @@
     "devDependencies": {
         "@types/bun": "*",
         "@wxn0brp/zhiva-base-lib": "github:wxn0brP/Zhiva-base-lib",
-        "typescript": "^6"
+        "typescript": "^7.0.0"
     }
 }
