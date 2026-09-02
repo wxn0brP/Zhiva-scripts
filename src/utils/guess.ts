@@ -1,38 +1,42 @@
 import { db } from "./db";
 
 export async function guessApp(name: string): Promise<string[]> {
-    const pkgs = await db.apps.find();
-    const names = pkgs.map((pkg) => pkg.name);
+	const pkgs = await db.apps.find();
+	const names = pkgs.map(pkg => pkg.name);
 
-    return _guessApp(name, names);
+	return _guessApp(name, names);
 }
 
-export async function _guessApp(name: string, names: string[]): Promise<string[]> {
-    const all = [...names];
-    for (const pkg of names) {
-        if (pkg.startsWith("wxn0brP/")) {
-            all.push(pkg.replace("wxn0brP/", ""));
-        }
-    }
+export async function _guessApp(
+	name: string,
+	names: string[],
+): Promise<string[]> {
+	const all = [
+		...names,
+	];
+	for (const pkg of names) {
+		if (pkg.startsWith("wxn0brP/")) {
+			all.push(pkg.replace("wxn0brP/", ""));
+		}
+	}
 
-    if (!name)
-        return all;
+	if (!name) return all;
 
-    const filtered = all
-        .filter((n) => fuzzyMatch(name, n))
-        .sort((a, b) => a.length - b.length);
+	const filtered = all
+		.filter(n => fuzzyMatch(name, n))
+		.sort((a, b) => a.length - b.length);
 
-    return filtered.filter(n => n.includes("/"));
+	return filtered.filter(n => n.includes("/"));
 }
 
 export function fuzzyMatch(query: string, text: string): boolean {
-    query = query.toLowerCase();
-    text = text.toLowerCase();
+	query = query.toLowerCase();
+	text = text.toLowerCase();
 
-    let i = 0;
-    for (const char of text) {
-        if (char === query[i]) i++;
-        if (i === query.length) return true;
-    }
-    return false;
+	let i = 0;
+	for (const char of text) {
+		if (char === query[i]) i++;
+		if (i === query.length) return true;
+	}
+	return false;
 }

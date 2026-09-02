@@ -8,7 +8,7 @@ export function isArchiveInput(input: string) {
 	return Object.keys(extensionsCmd).some(ext => input.endsWith(ext));
 }
 
-export const archiveStrategy: InstallationStrategy = async (context) => {
+export const archiveStrategy: InstallationStrategy = async context => {
 	const { input, previousCwd: prevCwd } = context;
 
 	let name = context.name;
@@ -18,15 +18,17 @@ export const archiveStrategy: InstallationStrategy = async (context) => {
 		process.exit(1);
 	}
 
-	if (!name.includes("/"))
-		name = `archive/${name}`;
+	if (!name.includes("/")) name = `archive/${name}`;
 
 	chdirToApps();
 
 	const appPath = resolve(name);
 
 	if (existsSync(appPath))
-		return { name, dir: appPath };
+		return {
+			name,
+			dir: appPath,
+		};
 
 	await downloadAndExtract(input, prevCwd, name);
 
@@ -34,4 +36,4 @@ export const archiveStrategy: InstallationStrategy = async (context) => {
 		name,
 		dir: appPath,
 	};
-}
+};

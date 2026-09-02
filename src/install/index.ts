@@ -1,37 +1,55 @@
 import {
-    archiveStrategy,
-    httpGitStrategy,
-    isArchiveInput,
-    isHttpGitInput,
-    namedGitStrategy,
+	archiveStrategy,
+	httpGitStrategy,
+	isArchiveInput,
+	isHttpGitInput,
+	namedGitStrategy,
 } from "./strategy";
-import { InstallationContext, InstallationStrategy, InstallOptions } from "./types";
+import {
+	InstallationContext,
+	InstallationStrategy,
+	InstallOptions,
+} from "./types";
 
 function getStrategy(input: string) {
-    const strategies: Array<[(input: string) => boolean, InstallationStrategy]> = [
-        [isArchiveInput, archiveStrategy],
-        [isHttpGitInput, httpGitStrategy],
-        // fallback - default strategy
-        [() => true, namedGitStrategy],
-    ];
+	const strategies: Array<
+		[
+			(input: string) => boolean,
+			InstallationStrategy,
+		]
+	> = [
+		[
+			isArchiveInput,
+			archiveStrategy,
+		],
+		[
+			isHttpGitInput,
+			httpGitStrategy,
+		],
+		// fallback - default strategy
+		[
+			() => true,
+			namedGitStrategy,
+		],
+	];
 
-    for (const [condition, strategy] of strategies) {
-        if (condition(input)) {
-            console.log(`[Z-SCR-5-01] 💜 Using ${strategy.name} strategy`);
-            return strategy;
-        }
-    }
+	for (const [condition, strategy] of strategies) {
+		if (condition(input)) {
+			console.log(`[Z-SCR-5-01] 💜 Using ${strategy.name} strategy`);
+			return strategy;
+		}
+	}
 }
 
 export async function ensueFiles(input: string, options: InstallOptions) {
-    const prevCwd = process.cwd();
-    const context: InstallationContext = {
-        input,
-        previousCwd: prevCwd,
-        ...options,
-    };
+	const prevCwd = process.cwd();
+	const context: InstallationContext = {
+		input,
+		previousCwd: prevCwd,
+		...options,
+	};
 
-    const strategy = getStrategy(input);
+	const strategy = getStrategy(input);
 
-    return await strategy(context);
+	return await strategy(context);
 }

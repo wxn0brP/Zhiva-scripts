@@ -5,37 +5,42 @@ import { ensureAppName } from "../utils/appName";
 import { db } from "../utils/db";
 
 export default async (args: string[]) => {
-    let name = args[0];
-    if (!name) {
-        console.error("Please provide an app name");
-        process.exit(1);
-    }
+	let name = args[0];
+	if (!name) {
+		console.error("Please provide an app name");
+		process.exit(1);
+	}
 
-    name = ensureAppName(name);
+	name = ensureAppName(name);
 
-    process.chdir(`${homedir()}/.zhiva/apps`);
+	process.chdir(`${homedir()}/.zhiva/apps`);
 
-    if (!existsSync(name)) {
-        console.error(`App ${name} is not installed`);
-        process.exit(1);
-    }
+	if (!existsSync(name)) {
+		console.error(`App ${name} is not installed`);
+		process.exit(1);
+	}
 
-    const [namespace, appName] = name.split("/");
-    process.chdir(namespace);
+	const [namespace, appName] = name.split("/");
+	process.chdir(namespace);
 
-    try {
-        await rm(appName, { force: true, recursive: true });
-    } catch (error) {
-        console.error(`Error removing app ${name}: ${error.message}`);
-        process.exit(1);
-    }
+	try {
+		await rm(appName, {
+			force: true,
+			recursive: true,
+		});
+	} catch (error) {
+		console.error(`Error removing app ${name}: ${error.message}`);
+		process.exit(1);
+	}
 
-    try {
-        await db.apps.removeOne({ name });
-    } catch (error) {
-        console.error(`Error removing app ${name} from database: ${error.message}`);
-        process.exit(1);
-    }
+	try {
+		await db.apps.removeOne({
+			name,
+		});
+	} catch (error) {
+		console.error(`Error removing app ${name} from database: ${error.message}`);
+		process.exit(1);
+	}
 
-    console.log(`App ${name} has been uninstalled`);
-}
+	console.log(`App ${name} has been uninstalled`);
+};

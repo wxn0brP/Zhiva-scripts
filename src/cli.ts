@@ -2,38 +2,68 @@
 
 let name = process.argv[2];
 if (!name) {
-    name = "help";
+	name = "help";
 }
 
 const aliases = {
-    start: ["run", "startup", "o", "r"],
-    install: ["i", "add"],
-    uninstall: ["rm", "remove"],
-    list: ["l", "ls"],
-    open: ["link"],
-    update: ["u", "up"],
-    self: ["update-self", "self-update"],
-    guess: ["find"],
-    search: ["s"],
-    "create-desktop-file": ["cdf"],
-    db: [],
-    help: ["h"],
-    protocol: [],
-}
+	start: [
+		"run",
+		"startup",
+		"o",
+		"r",
+	],
+	install: [
+		"i",
+		"add",
+	],
+	uninstall: [
+		"rm",
+		"remove",
+	],
+	list: [
+		"l",
+		"ls",
+	],
+	open: [
+		"link",
+	],
+	update: [
+		"u",
+		"up",
+	],
+	self: [
+		"update-self",
+		"self-update",
+	],
+	guess: [
+		"find",
+	],
+	search: [
+		"s",
+	],
+	"create-desktop-file": [
+		"cdf",
+	],
+	db: [],
+	help: [
+		"h",
+	],
+	protocol: [],
+};
 
 for (const key of Object.keys(aliases)) {
-    if (aliases[key].includes(name)) {
-        name = key;
-        break;
-    }
+	if (aliases[key].includes(name)) {
+		name = key;
+		break;
+	}
 }
 
 const knownCommands = Object.keys(aliases);
 if (!knownCommands.includes(name)) {
-    console.error(`Unknown command: ${name}`);
-    name = "help";
+	console.error(`Unknown command: ${name}`);
+	name = "help";
 }
 
 import("./cmd/" + name).then(module => module.default(process.argv.slice(3)));
 
-export { };
+export {};

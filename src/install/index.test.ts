@@ -1,14 +1,11 @@
 import { test, expect } from "bun:test";
-import {
-	isArchiveInput,
-	isHttpGitInput,
-} from "./strategy";
+import { isArchiveInput, isHttpGitInput } from "./strategy";
 
 test("Installation strategy detection", () => {
 	const strategies: ((input: string) => boolean)[] = [
 		isArchiveInput,
 		isHttpGitInput,
-		() => true
+		() => true,
 	];
 
 	function testExpect(input: string) {
@@ -25,4 +22,4 @@ test("Installation strategy detection", () => {
 	expect(testExpect("https://github.com/user/repo#branch")).toBe(1);
 	expect(testExpect("repo")).toBe(2);
 	expect(testExpect("user/repo")).toBe(2);
-})
+});

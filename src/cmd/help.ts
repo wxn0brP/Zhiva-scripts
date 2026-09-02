@@ -1,4 +1,5 @@
-console.log(`
+console.log(
+	`
 Zhiva CLI - A tool for managing Zhiva applications
 --------------------------------------------------
 
@@ -107,6 +108,7 @@ Command Details:
       zhiva cdf username/repo d
       zhiva cdf username/repo dm
 
-`.trimStart());
+`.trimStart(),
+);
 
-export default () => { }
+export default () => {};

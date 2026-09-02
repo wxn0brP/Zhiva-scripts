@@ -12,4 +12,6 @@ export interface InstallationContext extends InstallOptions {
 	previousCwd: string;
 }
 
-export type InstallationStrategy = (context: InstallationContext) => Promise<InstallationResult>;
+export type InstallationStrategy = (
+	context: InstallationContext,
+) => Promise<InstallationResult>;
