@@ -8,6 +8,7 @@ import {
 } from "fs";
 import { homedir, tmpdir } from "os";
 import { join, resolve } from "path";
+import { green, red } from "./color";
 
 export interface Opts {
 	name: string;
@@ -18,7 +19,7 @@ export interface Opts {
 }
 
 function getShortName(opts: Opts) {
-	let name = opts.appName || opts.name;
+	const name = opts.appName || opts.name;
 	return name.split("/").pop();
 }
 
@@ -53,6 +54,10 @@ ${icon ? `Icon=${icon}` : ""}
 		];
 
 	for (const path of paths) {
+		mkdirSync(path, {
+			recursive: true,
+		});
+
 		const filePath = join(path, `${shortName}.desktop`);
 		writeFileSync(filePath, desktop);
 		chmodSync(filePath, 0o755);
@@ -153,11 +158,13 @@ export function createShortCut(opts: Opts) {
 			break;
 		default:
 			console.error(
-				"[Z-SCR-1-02] 💔 Shortcuts are not supported on this platform",
+				red("[Z-SCR-1-02] 💔 Shortcuts are not supported on this platform"),
 			);
 	}
 	if (paths.length)
 		console.log(
-			`[Z-SCR-1-01] 💜 Shortcuts created for ${opts.name}:\n- ${paths.join("\n- ")}`,
+			green(
+				`[Z-SCR-1-01] 💜 Shortcuts created for ${opts.name}:\n- ${paths.join("\n- ")}`,
+			),
 		);
 }

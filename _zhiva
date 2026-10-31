@@ -8,6 +8,7 @@ _zhiva() {
   subcommands=(
     'start:Start a Zhiva application'
     'install:Install an application'
+    'create:Create a new application from the template'
     'uninstall:Uninstall an application'
     'list:List installed applications'
     'open:Open an application in the browser'
@@ -17,12 +18,16 @@ _zhiva() {
     'search:Search for apps'
     'cdf:Create desktop file for an installed application'
     'db:Interact with Zhiva database'
+    'protocol:Zhiva protocol handler'
+    'doctor:Check the Zhiva installation'
+    'version:Show version information'
     'help:Show help message'
   )
 
   aliases=(
     [run]=start [startup]=start [o]=start [r]=start
     [i]=install [add]=install
+    [new]=create
     [rm]=uninstall [remove]=uninstall
     [l]=list [ls]=list
     [link]=open
@@ -31,6 +36,7 @@ _zhiva() {
     [find]=guess
     [s]=search
     [create-desktop-file]=cdf
+    [--version]=version [-v]=version [v]=version
   )
 
   cur=${words[CURRENT]}
@@ -49,12 +55,25 @@ _zhiva() {
         '(-h --help)'{-h,--help}'[Show help]' \
         '(-e --engine)'{-e,--engine}'[Update engine mode]:mode:(0 1 2)' \
         '(-d --deps)'{-d,--deps}'[Update dependencies mode]:mode:(0 1 2)' \
+        '(-u --update)'{-u,--update}'[Force engine and deps update]' \
         '*:app name:_zhiva_guess'
+      ;;
+    create)
+      _arguments -C \
+        '(-h --help)'{-h,--help}'[Show help]' \
+        '(-t --template)'{-t,--template}'[Template repository]:url:_urls' \
+        '(-a --author)'{-a,--author}'[Author name]:name: _normal' \
+        '--display-name[Display name]:name: _normal' \
+        '--description[Description]:text: _normal' \
+        '--no-install[Skip dependency installation]' \
+        '--no-input[Do not ask questions]' \
+        '*:name: _normal'
       ;;
     install)
       _arguments -C \
         '(-h --help)'{-h,--help}'[Show help]' \
-        '(-s --shortcut)'{-s,--shortcut}'[Control desktop shortcuts]:value:(m d md dm)' \
+        '(-s --shortcut)'{-s,--shortcut}'[Control desktop shortcuts]:value:(m d n md dm)' \
+        '(-n --name)'{-n,--name}'[Set the app name]:name: _normal' \
         '*:app name:_zhiva_guess'
       ;;
     uninstall)
@@ -92,6 +111,12 @@ _zhiva() {
       _arguments -C \
         '(-h --help)'{-h,--help}'[Show help]' \
         '*:args: _normal'
+      ;;
+    doctor|protocol)
+      _arguments -C '(-h --help)'{-h,--help}'[Show help]'
+      ;;
+    version)
+      _arguments -C '--json[Output as JSON]'
       ;;
     help|*)
       _describe 'command' subcommands

@@ -7,6 +7,7 @@ import { ensureAppName, normalizeAppId } from "../utils/appName";
 import { db } from "../utils/db";
 import { guessApp } from "../utils/guess";
 import { interactiveAppSelect } from "../utils/select";
+import { cyan, dim, green, red, bold } from "../utils/color";
 
 // --- Args ---
 const { values, positionals } = parseArgs({
@@ -23,22 +24,27 @@ const { values, positionals } = parseArgs({
 			type: "string",
 			short: "d",
 		},
+		update: {
+			type: "boolean",
+			short: "u",
+		},
 	},
 	allowPositionals: true,
 });
 
 if (values.help) {
 	console.log(
-		`[Z-SCR-2-01]
-Usage: zhiva run [options] <app-name>
+		`${dim("[Z-SCR-2-01]")}
+${bold("Usage:")} zhiva run [options] <app-name>
 
-Options:
-  -h, --help            Show this help message
-  -e, --engine <mode>   Update Zhiva engine (default: 0)
-  -d, --deps <mode>     Update Zhiva dependencies (default: 0)
+${bold("Options:")}
+  ${cyan("-h, --help")}            Show this help message
+  ${cyan("-e, --engine <mode>")}   Update Zhiva engine (default: 0)
+  ${cyan("-d, --deps <mode>")}     Update Zhiva dependencies (default: 0)
+  ${cyan("-u, --update")}          Force engine and dependencies update
 
-Mode:
-  0 = auto
+${bold("Mode:")}
+  0 = auto (at most once per hour)
   1 = skip
   2 = force
 `.trimStart(),
@@ -71,25 +77,41 @@ function shouldCheck(mode: number, last: number) {
 async function handleComponent(name: string) {
 	let mode = 0;
 	const raw = values[name];
-	const cli = raw !== undefined ? Number(raw) : NaN;
 
-	if (!Number.isNaN(cli)) {
-		mode = cli;
+	if (raw !== undefined) {
+		mode = Number(raw);
+	} else if (values.update) {
+		mode = 2;
 	} else {
 		const data = await db.pref.findOne({
 			_id: name,
 		});
-		if (data?.v) mode = +data.v;
+		if (data?.v !== undefined) mode = +data.v;
+	}
+
+	if (
+		![
+			0,
+			1,
+			2,
+		].includes(mode)
+	) {
+		console.error(
+			red(
+				`Invalid --${name} mode: ${raw}. Use 0 (auto), 1 (skip) or 2 (force).`,
+			),
+		);
+		process.exit(1);
 	}
 
 	const doCheck = shouldCheck(mode, latestCheck);
 
 	if (!doCheck) {
-		console.log(`[Z-SCR-2-02] [${name}] skipped (mode ${mode})`);
+		console.log(dim(`[Z-SCR-2-02] [${name}] skipped (mode ${mode})`));
 		return;
 	}
 
-	console.log(`[Z-SCR-2-03] [${name}] updating (mode ${mode})...`);
+	console.log(cyan(`[Z-SCR-2-03] [${name}] updating (mode ${mode})...`));
 	await import("../utils/" + name);
 
 	if (lastCheckWrite) return;
@@ -104,7 +126,7 @@ await handleComponent("deps");
 // --- App ---
 let appName = positionals[1];
 if (appName === "init") {
-	console.log("[Z-SCR-2-04] 💜 Init completed");
+	console.log(green("[Z-SCR-2-04] 💜 Init completed"));
 	process.exit(0);
 }
 
@@ -135,16 +157,16 @@ if (!existsSync(appPath)) {
 
 			if (!existsSync(appPath)) {
 				console.error(
-					`[Z-SCR-2-07] Selected app '${appName}' could not be found.`,
+					red(`[Z-SCR-2-07] Selected app '${appName}' could not be found.`),
 				);
 				process.exit(1);
 			}
-			console.log(`Starting selected app: ${appName}`);
+			console.log(`${dim("Starting selected app:")} ${cyan(appName)}`);
 		} else {
 			process.exit(1);
 		}
 	} else {
-		console.error(`App ${appName} does not exist`);
+		console.error(red(`App ${appName} does not exist`));
 		process.exit(1);
 	}
 }
@@ -202,7 +224,7 @@ async function start() {
 
 	bun.on("exit", code => process.exit(code ?? 1));
 	bun.on("error", err => {
-		console.error("Failed to start Bun:", err);
+		console.error(red("Failed to start Bun:"), err);
 		process.exit(1);
 	});
 

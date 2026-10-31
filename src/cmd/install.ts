@@ -5,6 +5,7 @@ import { db } from "../utils/db";
 import { createShortCut } from "../utils/desktop";
 import { getPref } from "../utils/pref";
 import { ensueFiles } from "../install";
+import { green, red } from "../utils/color";
 
 export default async (args: string[]) => {
 	const { values, positionals } = parseArgs({
@@ -23,7 +24,7 @@ export default async (args: string[]) => {
 	});
 
 	if (!positionals[0]) {
-		console.error("Please provide an app name");
+		console.error(red("Please provide an app name"));
 		process.exit(1);
 	}
 
@@ -83,5 +84,5 @@ export default async (args: string[]) => {
 		});
 	}
 
-	console.log(`[Z-SCR-11-01] 💜 Installed ${name}`);
+	console.log(green(`[Z-SCR-11-01] 💜 Installed ${name}`));
 };

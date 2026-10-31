@@ -1,112 +1,155 @@
+import { bold, cyan, dim } from "../utils/color";
+
 console.log(
 	`
-Zhiva CLI - A tool for managing Zhiva applications
---------------------------------------------------
+${bold("Zhiva CLI")} - A tool for managing Zhiva applications
+${dim("--------------------------------------------------")}
 
-Usage:
+${bold("Usage:")}
   zhiva <command> [options]
 
-Commands:
-  start [app-name]            Start an application
-  install <app-name>          Install an application from a GitHub repository
-  uninstall <app-name>        Uninstall an installed application
-  list                        List installed applications
-  open <link>                 Open an application in the browser
-  self                        Update Zhiva
-  update                      Update Zhiva applications
-  guess [app-name]            Find an app by name
-  search [query]              Search for apps
-  cdf <app-name>              Create desktop file for an installed application
-  db <...args>                Interact with Zhiva database
-  protocol <url>              Zhiva protocol handler
-  help                        Show this help message
+${bold("Commands:")}
+  ${cyan("start")} [app-name]            Start an application
+  ${cyan("install")} <app-name>          Install an application from a GitHub repository
+  ${cyan("create")} [name]               Create a new application from the template
+  ${cyan("uninstall")} <app-name>        Uninstall an installed application
+  ${cyan("list")}                        List installed applications
+  ${cyan("open")} <link>                 Open an application in the browser
+  ${cyan("self")}                        Update Zhiva
+  ${cyan("update")}                      Update Zhiva applications
+  ${cyan("guess")} [app-name]            Find an app by name
+  ${cyan("search")} [query]              Search for apps
+  ${cyan("cdf")} <app-name>              Create desktop file for an installed application
+  ${cyan("db")} <...args>                Interact with Zhiva database
+  ${cyan("protocol")} <url>              Zhiva protocol handler
+  ${cyan("doctor")}                      Check the Zhiva installation
+  ${cyan("version")}                     Show version information
+  ${cyan("help")}                        Show this help message
 
---------------------------------------------------
-Command Details:
+${dim("--------------------------------------------------")}
+${bold("Command Details:")}
 
-  start <app-name>            Start a Zhiva application
-    Aliases:  run, startup, o, r
-    Options:
+  ${cyan("start")} <app-name>            Start a Zhiva application
+    ${dim("Aliases:")}  run, startup, o, r
+    ${dim("Options:")}
       -h, --help              Show help for the start command
-      -e, --engine <mode>     Update Zhiva engine
-      -d, --deps <mode>       Update Zhiva dependencies
+      -e, --engine <mode>     Update Zhiva engine (default: 0)
+      -d, --deps <mode>       Update Zhiva dependencies (default: 0)
+      -u, --update            Force engine and deps update
 
-    Examples:
+    ${dim("Mode:")}
+      0 = auto (at most once per hour)
+      1 = skip
+      2 = force
+
+    ${dim("Examples:")}
       zhiva start Zhiva-store-app
       zhiva start username/my-repo
-      zhiva start init -e 2 -d 2
+      zhiva start . --update
 
-  install <app-name>          Install an application
-    Aliases:  i, add
-    Options:
+  ${cyan("install")} <app-name>          Install an application
+    ${dim("Aliases:")}  i, add
+    ${dim("Options:")}
       --shortcut, -s <value>  Control desktop shortcuts
          "m" - menu
          "d" - desktop
+         "n" - no shortcut
          or absolute path
+      --name, -n <name>       Set the app name (required only for archives
+                              when it cannot be derived from the file name)
 
-    Examples:
+    ${dim("Examples:")}
       zhiva install Zhiva-store-app
       zhiva install username/repo
+      zhiva install ./my-app.zip
 
-  uninstall <app-name>        Remove an installed application
-    Aliases:  rm, remove
+  ${cyan("create")} [name]               Create a new application from the template
+    ${dim("Aliases:")}  new
+    ${dim("Options:")}
+      --template, -t <url>     Template repository (default: Zhiva-template-app)
+      --author, -a <name>      Author name (default: git user.name)
+      --display-name <name>    Display name (default: derived from app name)
+      --description <text>     Description (default: display name)
+      --no-install             Skip dependency installation
+      --no-input               Do not ask questions
+      -h, --help               Show help for the create command
 
-    Examples:
+    When the name is omitted, create asks for the directory. Without metadata
+    flags, it also asks for the display name, author and description.
+
+    ${dim("Examples:")}
+      zhiva create my-app
+      zhiva create my-app --author wxn0brP --description "My first app"
+      zhiva create my-app --template https://github.com/user/repo.git
+
+  ${cyan("uninstall")} <app-name>        Remove an installed application
+    ${dim("Aliases:")}  rm, remove
+
+    ${dim("Examples:")}
       zhiva uninstall Zhiva-store-app
       zhiva uninstall username/repo
 
-  list                        List installed applications
-    Aliases:  l, ls
-    Options:
+  ${cyan("list")}                        List installed applications
+    ${dim("Aliases:")}  l, ls
+    ${dim("Options:")}
       --json                  Output as JSON
 
-  open <link>                 Open an application in the browser
-    Aliases:  link
+  ${cyan("open")} <link>                 Open an application in the browser
+    ${dim("Aliases:")}  link
 
-    Examples:
+    ${dim("Examples:")}
       zhiva open https://github.com/wxn0brP/Zhiva-store-app
       zhiva link https://wxn0brp.github.io
 
-  self                        Update Zhiva
-    Aliases:  update-self, self-update
+  ${cyan("self")}                        Update Zhiva
+    ${dim("Aliases:")}  update-self, self-update
 
-  update                      Update Zhiva applications
-    Aliases:  u, up
-    Options:
+  ${cyan("update")}                      Update Zhiva applications
+    ${dim("Aliases:")}  u, up
+    ${dim("Options:")}
       --json                  Output as JSON (try mode)
 
-    Examples:
+    ${dim("Examples:")}
       zhiva update
       zhiva update --json
 
-  guess [name]                Find an app by name (fuzzy match, data from local apps)
-    Aliases:  find
+  ${cyan("guess")} [name]                Find an app by name (fuzzy match, data from local apps)
+    ${dim("Aliases:")}  find
 
-    Examples:
+    ${dim("Examples:")}
       zhiva guess
       zhiva guess Zhiva
 
-  search [query]              Search for apps by name (fuzzy match, data from GitHub)
-    Aliases:  s
+  ${cyan("search")} [query]              Search for apps by name (fuzzy match, data from GitHub)
+    ${dim("Aliases:")}  s
 
-    Options:
+    ${dim("Options:")}
       --json                  Output as JSON
       --pretty                Output as pretty JSON
 
-    Examples:
+    ${dim("Examples:")}
       zhiva search
       zhiva search Zhiva-store-app
 
-  cdf <app-name> <flags>      Create desktop file for an installed application
-    Aliases:  create-desktop-file
-    Flags:
+  ${cyan("cdf")} <app-name> <flags>      Create desktop file for an installed application
+    ${dim("Aliases:")}  create-desktop-file
+    ${dim("Flags:")}
       d                       Desktop
       m                       Menu
 
-    Examples:
+    ${dim("Examples:")}
       zhiva create-desktop-file Zhiva-store-app
       zhiva cdf username/repo d
       zhiva cdf username/repo dm
+
+  ${cyan("doctor")}                      Check the Zhiva installation
+    Verifies bun, git, the native webview libraries, PATH, the engine,
+    the protocol handler and the local database.
+
+  ${cyan("version")}                     Show version information
+    ${dim("Aliases:")}  --version, -v, v
+    ${dim("Options:")}
+      --json                  Output as JSON
 
 `.trimStart(),
 );

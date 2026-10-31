@@ -1,5 +1,7 @@
 #!/usr/bin/env bun
 
+import { red } from "./utils/color";
+
 let name = process.argv[2];
 if (!name) {
 	name = "help";
@@ -15,6 +17,9 @@ const aliases = {
 	install: [
 		"i",
 		"add",
+	],
+	create: [
+		"new",
 	],
 	uninstall: [
 		"rm",
@@ -45,6 +50,12 @@ const aliases = {
 		"cdf",
 	],
 	db: [],
+	doctor: [],
+	version: [
+		"--version",
+		"-v",
+		"v",
+	],
 	help: [
 		"h",
 	],
@@ -60,10 +71,8 @@ for (const key of Object.keys(aliases)) {
 
 const knownCommands = Object.keys(aliases);
 if (!knownCommands.includes(name)) {
-	console.error(`Unknown command: ${name}`);
+	console.error(red(`Unknown command: ${name}`));
 	name = "help";
 }
 
 import("./cmd/" + name).then(module => module.default(process.argv.slice(3)));
-
-export {};

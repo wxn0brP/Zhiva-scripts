@@ -3,6 +3,7 @@ import { existsSync, readFileSync } from "fs";
 import { homedir } from "os";
 import { join } from "path";
 import { db } from "../utils/db";
+import { cyan, green, red, yellow } from "../utils/color";
 
 export async function checkRepos(repos: string[], jsonMode = false) {
 	const results = new Map<string, boolean>();
@@ -44,8 +45,8 @@ export async function checkRepos(repos: string[], jsonMode = false) {
 				if (jsonMode) return;
 				console.log(
 					needsUpdate
-						? `[Z-SCR-8-02] 💜 ${repo} needs update`
-						: `[Z-SCR-8-03] 💜 ${repo} is up to date`,
+						? yellow(`[Z-SCR-8-02] 💜 ${repo} needs update`)
+						: green(`[Z-SCR-8-03] 💜 ${repo} is up to date`),
 				);
 			} catch {
 				results.set(repo, false);
@@ -62,7 +63,7 @@ export default async (args: string[]) => {
 
 	const apps = await db.apps.find();
 	const appNames = apps.map(app => app.name);
-	if (!jsonMode) console.log("[Z-SCR-8-01] Checking apps...");
+	if (!jsonMode) console.log(cyan("[Z-SCR-8-01] Checking apps..."));
 
 	const update = await checkRepos(appNames, jsonMode);
 
@@ -74,7 +75,7 @@ export default async (args: string[]) => {
 	for (const [repo, needsUpdate] of update) {
 		if (!needsUpdate) continue;
 
-		console.log(`[Z-SCR-8-04] 💜 Updating ${repo}...`);
+		console.log(cyan(`[Z-SCR-8-04] 💜 Updating ${repo}...`));
 		try {
 			process.chdir(repo);
 			await $`git pull`;
@@ -83,9 +84,9 @@ export default async (args: string[]) => {
 			if (pkg.scripts?.build) {
 				await $`bun run build`;
 			}
-			console.log(`[Z-SCR-8-05] 💜 ${repo} updated`);
+			console.log(green(`[Z-SCR-8-05] 💜 ${repo} updated`));
 		} catch {
-			console.error(`[Z-SCR-8-06] Error updating ${repo}`);
+			console.error(red(`[Z-SCR-8-06] Error updating ${repo}`));
 		} finally {
 			process.chdir("../..");
 		}

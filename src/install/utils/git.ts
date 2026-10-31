@@ -1,7 +1,8 @@
 import { $ } from "bun";
+import { cyan, red } from "../../utils/color";
 
 export async function getConfig(name: string) {
-	let branch: string | undefined = undefined;
+	let branch: string | undefined;
 	let cloneName = name;
 
 	try {
@@ -11,7 +12,7 @@ export async function getConfig(name: string) {
 
 		for (let i = 0; i < maxRedirects; i++) {
 			if (i === maxRedirects - 1) {
-				console.error("Exceeded max redirects while resolving config.");
+				console.error(red("Exceeded max redirects while resolving config."));
 				break;
 			}
 
@@ -23,7 +24,9 @@ export async function getConfig(name: string) {
 
 			if (tempConfig.redirect_repo) {
 				console.log(
-					`Redirecting from "${cloneName}" to "${tempConfig.redirect_repo}"...`,
+					cyan(
+						`Redirecting from "${cloneName}" to "${tempConfig.redirect_repo}"...`,
+					),
 				);
 				name = tempConfig.redirect_repo;
 				cloneName = tempConfig.redirect_repo;
@@ -37,7 +40,7 @@ export async function getConfig(name: string) {
 				configPath = newPath.startsWith("./") ? newPath.slice(2) : newPath;
 				if (newBranch) configBranch = newBranch;
 				console.log(
-					`Redirecting zhiva.json to "${tempConfig.redirect_zhiva}"...`,
+					cyan(`Redirecting zhiva.json to "${tempConfig.redirect_zhiva}"...`),
 				);
 				continue;
 			}
@@ -46,7 +49,7 @@ export async function getConfig(name: string) {
 			break;
 		}
 	} catch (e) {
-		console.error("Error resolving zhiva config:", e.message);
+		console.error(red("Error resolving zhiva config:"), e.message);
 	}
 
 	return [

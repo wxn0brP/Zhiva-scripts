@@ -2,14 +2,29 @@ import { $ } from "bun";
 import { existsSync, mkdirSync } from "fs";
 import { cp, mkdir, readdir, rm } from "fs/promises";
 import { homedir } from "os";
-import { extname, join } from "path";
+import { join, resolve } from "path";
+import { dim, red } from "../../utils/color";
 
-export const extensionsCmd = {
-	".zip": "unzip",
-	".tar.gz": "tar -xvf",
-	".tar.bz2": "tar -xvf",
-	".tar.xz": "tar -xvf",
-	".7z": "7z x",
+export const extensionsCmd: Record<string, string[]> = {
+	".zip": [
+		"unzip",
+	],
+	".tar.gz": [
+		"tar",
+		"-xvf",
+	],
+	".tar.bz2": [
+		"tar",
+		"-xvf",
+	],
+	".tar.xz": [
+		"tar",
+		"-xvf",
+	],
+	".7z": [
+		"7z",
+		"x",
+	],
 };
 
 async function downloadFileIsNeeded(rawUrl: string) {
@@ -44,17 +59,19 @@ export async function downloadAndExtract(
 	const isUrl = urlOrFile.startsWith("http");
 	const file = isUrl
 		? await downloadFileIsNeeded(urlOrFile)
-		: join(previousCwd, urlOrFile);
+		: resolve(previousCwd, urlOrFile);
 
 	if (!existsSync(file)) {
-		console.error("[Z-SCR-10-01] File not found at", file);
+		console.error(red("[Z-SCR-10-01] File not found at"), file);
 		process.exit(1);
 	}
 
-	const extension = extname(file);
+	const extension = Object.keys(extensionsCmd)
+		.sort((a, b) => b.length - a.length)
+		.find(ext => file.endsWith(ext));
 
-	if (!Object.keys(extensionsCmd).includes(extension)) {
-		console.error("[Z-SCR-10-02] Invalid file extension:", extension);
+	if (!extension) {
+		console.error(red("[Z-SCR-10-02] Invalid file extension:"), file);
 		process.exit(1);
 	}
 
@@ -72,15 +89,43 @@ export async function downloadAndExtract(
 	});
 
 	process.chdir(zhivaTempDir);
-	await $`${extensionsCmd[extension]} ${file}`;
 
-	const zhivaDir = await findZhivaFile(zhivaTempDir);
-	if (!zhivaDir) {
-		console.error("[Z-SCR-10-03] No Zhiva file found in archive");
+	const extractor = extensionsCmd[extension][0];
+	if (!Bun.which(extractor)) {
+		console.error(
+			red(
+				`[Z-SCR-10-06] ${extractor} is required to extract ${extension} archives`,
+			),
+		);
 		process.exit(1);
 	}
 
-	console.log(`[Z-SCR-10-04] Extracted to ${zhivaDir}`);
+	const extract = Bun.spawn(
+		[
+			...extensionsCmd[extension],
+			file,
+		],
+		{
+			stdin: "inherit",
+			stdout: "inherit",
+			stderr: "inherit",
+		},
+	);
+	const extractCode = await extract.exited;
+	if (extractCode !== 0) {
+		console.error(
+			red(`[Z-SCR-10-07] Failed to extract ${file} (exit ${extractCode})`),
+		);
+		process.exit(1);
+	}
+
+	const zhivaDir = await findZhivaFile(zhivaTempDir);
+	if (!zhivaDir) {
+		console.error(red("[Z-SCR-10-03] No Zhiva file found in archive"));
+		process.exit(1);
+	}
+
+	console.log(dim(`[Z-SCR-10-04] Extracted to ${zhivaDir}`));
 
 	const targetDir = join(zhivaBaseApps, name);
 	await mkdir(targetDir, {
@@ -95,5 +140,5 @@ export async function downloadAndExtract(
 		force: true,
 	});
 
-	console.log(`[Z-SCR-10-05] Copied ${targetDir}`);
+	console.log(dim(`[Z-SCR-10-05] Copied ${targetDir}`));
 }

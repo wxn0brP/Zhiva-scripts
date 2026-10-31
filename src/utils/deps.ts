@@ -1,8 +1,9 @@
 import { $ } from "bun";
 import { existsSync, mkdirSync } from "fs";
 import { copyPkgToReqMods, installReqMods } from "./npm";
+import { cyan, green, red } from "./color";
 
-console.log("[Z-SCR-3-01] 💜 Updating Zhiva base-lib...");
+console.log(cyan("[Z-SCR-3-01] 💜 Updating Zhiva base-lib..."));
 if (!existsSync("node_modules/@wxn0brp/zhiva-base-lib")) {
 	mkdirSync("node_modules/@wxn0brp", {
 		recursive: true,
@@ -26,12 +27,12 @@ try {
 	setRequireReqMods(stdout);
 	copyPkgToReqMods("zhiva-base-lib");
 } catch (e) {
-	console.error("Error updating Zhiva base-lib:", e);
+	console.error(red("Error updating Zhiva base-lib:"), e);
 } finally {
 	process.chdir(cwd);
 }
 
-console.log("[Z-SCR-3-02] 💜 Updating Zhiva scripts...");
+console.log(cyan("[Z-SCR-3-02] 💜 Updating Zhiva scripts..."));
 try {
 	process.chdir("scripts");
 	const { stdout } = await $`git pull`;
@@ -42,8 +43,8 @@ try {
 }
 
 if (requireReqMods || process.env.ZHIVA_FORCE_INSTALL_DEPS === "true") {
-	console.log("[Z-SCR-3-03] 💜 Installing dependencies...");
+	console.log(cyan("[Z-SCR-3-03] 💜 Installing dependencies..."));
 	await installReqMods();
 }
 
-console.log("[Z-SCR-3-04] 💜 Update dependencies completed");
+console.log(green("[Z-SCR-3-04] 💜 Update dependencies completed"));

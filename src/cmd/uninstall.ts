@@ -3,11 +3,12 @@ import { rm } from "fs/promises";
 import { homedir } from "os";
 import { ensureAppName } from "../utils/appName";
 import { db } from "../utils/db";
+import { green, red } from "../utils/color";
 
 export default async (args: string[]) => {
 	let name = args[0];
 	if (!name) {
-		console.error("Please provide an app name");
+		console.error(red("Please provide an app name"));
 		process.exit(1);
 	}
 
@@ -16,7 +17,7 @@ export default async (args: string[]) => {
 	process.chdir(`${homedir()}/.zhiva/apps`);
 
 	if (!existsSync(name)) {
-		console.error(`App ${name} is not installed`);
+		console.error(red(`App ${name} is not installed`));
 		process.exit(1);
 	}
 
@@ -29,7 +30,7 @@ export default async (args: string[]) => {
 			recursive: true,
 		});
 	} catch (error) {
-		console.error(`Error removing app ${name}: ${error.message}`);
+		console.error(red(`Error removing app ${name}: ${error.message}`));
 		process.exit(1);
 	}
 
@@ -38,9 +39,11 @@ export default async (args: string[]) => {
 			name,
 		});
 	} catch (error) {
-		console.error(`Error removing app ${name} from database: ${error.message}`);
+		console.error(
+			red(`Error removing app ${name} from database: ${error.message}`),
+		);
 		process.exit(1);
 	}
 
-	console.log(`App ${name} has been uninstalled`);
+	console.log(green(`App ${name} has been uninstalled`));
 };

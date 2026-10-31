@@ -5,10 +5,11 @@ import { ensureAppName } from "../../utils/appName";
 import { InstallationStrategy } from "../types";
 import { chdirToApps } from "../utils";
 import { checkIsZhivaApp, clone, getConfig } from "../utils/git";
+import { red } from "../../utils/color";
 
 export const namedGitStrategy: InstallationStrategy = async context => {
 	const { input } = context;
-	let name = context.name || ensureAppName(input);
+	const name = context.name || ensureAppName(input);
 
 	chdirToApps();
 
@@ -33,7 +34,9 @@ export const namedGitStrategy: InstallationStrategy = async context => {
 			: await getConfig(resolvedName);
 
 		if (!(await checkIsZhivaApp(repo))) {
-			console.error(`[Z-SCR-5-03] 💔 App ${repo} is not a valid zhiva app`);
+			console.error(
+				red(`[Z-SCR-5-03] 💔 App ${repo} is not a valid zhiva app`),
+			);
 			process.exit(1);
 		}
 

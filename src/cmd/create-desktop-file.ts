@@ -3,12 +3,12 @@ import { homedir } from "os";
 import { ensureAppName } from "../utils/appName";
 import { db } from "../utils/db";
 import { createShortCut } from "../utils/desktop";
+import { red } from "../utils/color";
 
 export default async (args: string[]) => {
-	console.log(args);
 	let name = args[0];
 	if (!name) {
-		console.error("Please provide an app name");
+		console.error(red("Please provide an app name"));
 		process.exit(1);
 	}
 
@@ -19,13 +19,13 @@ export default async (args: string[]) => {
 		name,
 	});
 	if (!appData) {
-		console.error(`App ${name} is not installed`);
+		console.error(red(`App ${name} is not installed`));
 		process.exit(1);
 	}
 
 	let flags = "";
 
-	const second = args[1];
+	const second = args[1] || "";
 	if (second.includes("d")) flags += "d";
 	if (second.includes("m")) flags += "m";
 	if (
@@ -39,7 +39,7 @@ export default async (args: string[]) => {
 
 	if (!flags.length) flags = "dm";
 
-	let zhivaMeta = {
+	const zhivaMeta = {
 		name,
 		icon: "default",
 		win_icon: "default",
