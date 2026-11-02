@@ -21,6 +21,7 @@ ${bold("Commands:")}
   ${cyan("search")} [query]              Search for apps
   ${cyan("cdf")} <app-name>              Create desktop file for an installed application
   ${cyan("db")} <...args>                Interact with Zhiva database
+  ${cyan("repair")}                      Repair the app database
   ${cyan("protocol")} <url>              Zhiva protocol handler
   ${cyan("doctor")}                      Check the Zhiva installation
   ${cyan("version")}                     Show version information
@@ -149,6 +150,19 @@ ${bold("Command Details:")}
       zhiva db getCollections
       zhiva db find apps '{}'
       zhiva db updateOne apps '{"name":"app"}' '{"updatedAt":0}'
+
+  ${cyan("repair")}                      Reconcile the app database with installed apps
+    ${dim("Aliases:")}  db-repair, sync-db
+    ${dim("Options:")}
+      --dry-run               Show the diff without applying changes
+      --yes, -y               Apply changes without confirmation
+      --json                  Output as JSON (preview unless --yes is used)
+      --prune-empty           Remove empty namespace directories
+
+    ${dim("Examples:")}
+      zhiva repair --dry-run
+      zhiva repair
+      zhiva repair --yes --prune-empty
 
   ${cyan("doctor")}                      Check the Zhiva installation
     Verifies bun, git, the native webview libraries, PATH, the engine,

@@ -50,6 +50,10 @@ const aliases = {
 		"cdf",
 	],
 	db: [],
+	repair: [
+		"db-repair",
+		"sync-db",
+	],
 	doctor: [],
 	version: [
 		"--version",

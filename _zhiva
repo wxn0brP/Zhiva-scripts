@@ -18,6 +18,7 @@ _zhiva() {
     'search:Search for apps'
     'cdf:Create desktop file for an installed application'
     'db:Interact with Zhiva database'
+    'repair:Repair the app database (db vs apps directory)'
     'protocol:Zhiva protocol handler'
     'doctor:Check the Zhiva installation'
     'version:Show version information'
@@ -36,6 +37,7 @@ _zhiva() {
     [find]=guess
     [s]=search
     [create-desktop-file]=cdf
+    [db-repair]=repair [sync-db]=repair
     [--version]=version [-v]=version [v]=version
   )
 
@@ -111,6 +113,14 @@ _zhiva() {
       _arguments -C \
         '(-h --help)'{-h,--help}'[Show help]' \
         '*:args: _normal'
+      ;;
+    repair)
+      _arguments -C \
+        '(-h --help)'{-h,--help}'[Show help]' \
+        '--dry-run[Show the diff without applying changes]' \
+        '(-y --yes)'{-y,--yes}'[Apply changes without confirmation]' \
+        '--json[Output as JSON (preview unless --yes is used)]' \
+        '--prune-empty[Remove empty namespace directories]'
       ;;
     doctor|protocol)
       _arguments -C '(-h --help)'{-h,--help}'[Show help]'
