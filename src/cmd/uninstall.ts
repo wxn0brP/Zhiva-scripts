@@ -1,6 +1,7 @@
 import { existsSync } from "fs";
 import { rm } from "fs/promises";
 import { homedir } from "os";
+import { join } from "path";
 import { ensureAppName } from "../utils/appName";
 import { db } from "../utils/db";
 import { green, red } from "../utils/color";
@@ -14,7 +15,13 @@ export default async (args: string[]) => {
 
 	name = ensureAppName(name);
 
-	process.chdir(`${homedir()}/.zhiva/apps`);
+	const appsDir = join(homedir(), ".zhiva", "apps");
+	if (!existsSync(appsDir)) {
+		console.error(red("No applications installed"));
+		process.exit(1);
+	}
+
+	process.chdir(appsDir);
 
 	if (!existsSync(name)) {
 		console.error(red(`App ${name} is not installed`));

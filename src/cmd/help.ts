@@ -142,6 +142,14 @@ ${bold("Command Details:")}
       zhiva cdf username/repo d
       zhiva cdf username/repo dm
 
+  ${cyan("db")} <method> <collection> [args...]   Call a database method
+    Method arguments starting with { or [ are parsed as JSON5.
+
+    ${dim("Examples:")}
+      zhiva db getCollections
+      zhiva db find apps '{}'
+      zhiva db updateOne apps '{"name":"app"}' '{"updatedAt":0}'
+
   ${cyan("doctor")}                      Check the Zhiva installation
     Verifies bun, git, the native webview libraries, PATH, the engine,
     the protocol handler and the local database.

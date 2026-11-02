@@ -1,10 +1,9 @@
-import { $ } from "bun";
 import { existsSync } from "fs";
 import { resolve } from "path";
 import { ensureAppName } from "../../utils/appName";
 import { InstallationStrategy } from "../types";
 import { chdirToApps } from "../utils";
-import { checkIsZhivaApp, clone, getConfig } from "../utils/git";
+import { checkIsZhivaApp, clone, getConfig, pull } from "../utils/git";
 import { red } from "../../utils/color";
 
 export const namedGitStrategy: InstallationStrategy = async context => {
@@ -18,7 +17,7 @@ export const namedGitStrategy: InstallationStrategy = async context => {
 
 	if (existsSync(appPath)) {
 		process.chdir(appPath);
-		if (existsSync(".git")) await $`git pull`;
+		if (existsSync(".git")) await pull();
 		return {
 			name,
 		};

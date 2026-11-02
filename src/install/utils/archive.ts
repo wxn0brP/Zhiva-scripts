@@ -51,6 +51,47 @@ async function findZhivaFile(path: string): Promise<string | null> {
 	return null;
 }
 
+function windowsZipCommands(file: string) {
+	const commands: string[][] = [];
+	if (Bun.which("tar"))
+		commands.push([
+			"tar",
+			"-xf",
+			file,
+		]);
+	if (Bun.which("powershell")) {
+		const escaped = file.replaceAll("'", "''");
+		commands.push([
+			"powershell",
+			"-NoProfile",
+			"-Command",
+			`Expand-Archive -LiteralPath '${escaped}' -DestinationPath . -Force`,
+		]);
+	}
+	if (Bun.which("unzip"))
+		commands.push([
+			"unzip",
+			file,
+		]);
+
+	return commands;
+}
+
+function resolveExtractors(extension: string, file: string) {
+	if (extension === ".zip" && process.platform === "win32")
+		return windowsZipCommands(file);
+
+	const command = extensionsCmd[extension];
+	return command
+		? [
+				[
+					...command,
+					file,
+				],
+			]
+		: [];
+}
+
 export async function downloadAndExtract(
 	urlOrFile: string,
 	previousCwd: string,
@@ -58,7 +99,7 @@ export async function downloadAndExtract(
 ) {
 	const isUrl = urlOrFile.startsWith("http");
 	const file = isUrl
-		? await downloadFileIsNeeded(urlOrFile)
+		? resolve(await downloadFileIsNeeded(urlOrFile))
 		: resolve(previousCwd, urlOrFile);
 
 	if (!existsSync(file)) {
@@ -90,28 +131,43 @@ export async function downloadAndExtract(
 
 	process.chdir(zhivaTempDir);
 
-	const extractor = extensionsCmd[extension][0];
-	if (!Bun.which(extractor)) {
+	const commands = resolveExtractors(extension, file);
+	if (!commands.length) {
 		console.error(
 			red(
-				`[Z-SCR-10-06] ${extractor} is required to extract ${extension} archives`,
+				`[Z-SCR-10-06] Cannot extract ${extension} archives: missing archive tool`,
 			),
 		);
+		if (process.platform === "win32") {
+			console.error(
+				dim(
+					"Windows 10 and newer include tar. For .7z archives install 7-Zip.",
+				),
+			);
+		} else {
+			console.error(
+				dim("Install the missing archive tool with your package manager."),
+			);
+		}
 		process.exit(1);
 	}
 
-	const extract = Bun.spawn(
-		[
-			...extensionsCmd[extension],
-			file,
-		],
-		{
+	let extractCode = 1;
+	for (let i = 0; i < commands.length; i++) {
+		const command = commands[i];
+		const extract = Bun.spawn(command, {
 			stdin: "inherit",
 			stdout: "inherit",
 			stderr: "inherit",
-		},
-	);
-	const extractCode = await extract.exited;
+		});
+		extractCode = await extract.exited;
+		if (extractCode === 0) break;
+		if (i < commands.length - 1)
+			console.error(
+				dim(`[Z-SCR-10-08] ${command[0]} failed, trying another extractor`),
+			);
+	}
+
 	if (extractCode !== 0) {
 		console.error(
 			red(`[Z-SCR-10-07] Failed to extract ${file} (exit ${extractCode})`),

@@ -242,11 +242,56 @@ if (process.platform === "linux") {
 		"Windows and Linux are the supported platforms",
 	);
 } else if (process.platform === "win32") {
+	const launcher = join(zhivaRoot, "bin", "zhiva.cmd");
+	const launcherExists = existsSync(launcher);
 	add(
-		"platform",
-		"warn",
-		"Windows requires the WebView2 runtime",
-		"It is included in Windows 11 and most Windows 10 installs",
+		"launcher",
+		launcherExists ? "ok" : "fail",
+		launcherExists ? launcher : "missing",
+		launcherExists
+			? undefined
+			: "Re-run the Zhiva Windows installer to recreate zhiva.cmd",
+	);
+
+	let webview2: ReturnType<typeof run> | undefined;
+	for (const key of [
+		"HKLM\\SOFTWARE\\WOW6432Node\\Microsoft\\EdgeUpdate\\Clients\\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}",
+		"HKCU\\Software\\Microsoft\\EdgeUpdate\\Clients\\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}",
+	]) {
+		const result = run([
+			"reg",
+			"query",
+			key,
+			"/v",
+			"pv",
+		]);
+		if (result.ok) {
+			webview2 = result;
+			break;
+		}
+	}
+	const webview2Version = webview2?.out.match(/pv\s+REG_SZ\s+(\S+)/)?.[1];
+	add(
+		"webview2",
+		webview2 ? "ok" : "fail",
+		webview2 ? (webview2Version ?? "installed") : "not found",
+		webview2
+			? undefined
+			: "Install the Evergreen WebView2 runtime: https://developer.microsoft.com/microsoft-edge/webview2/",
+	);
+
+	const protocol = run([
+		"reg",
+		"query",
+		"HKCU\\Software\\Classes\\zhiva\\shell\\open\\command",
+	]).ok;
+	add(
+		"protocol handler",
+		protocol ? "ok" : "warn",
+		protocol ? "registered" : "not registered",
+		protocol
+			? undefined
+			: "Re-run the Zhiva Windows installer to register zhiva:// links",
 	);
 }
 

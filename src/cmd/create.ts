@@ -256,6 +256,7 @@ export default async (args: string[]) => {
 
 	const pkgPath = join(target, "package.json");
 	const pkgSource = readJson(pkgPath);
+	const hasBuildScript = Boolean(pkgSource?.scripts?.build);
 	if (pkgSource) {
 		const sourceName = typeof pkgSource.name === "string" ? pkgSource.name : "";
 		const hadNameToken = sourceName.includes("[YOUR");
@@ -319,7 +320,9 @@ export default async (args: string[]) => {
 	console.log(`${dim("description:")} ${description}`);
 	console.log("");
 	console.log(bold("Next steps:"));
-	console.log(`  ${cyan(`cd ${name}`)}`);
+	console.log(`  ${cyan(`cd ${target}`)}`);
+	if (values["no-install"]) console.log(`  ${cyan("bun install")}`);
+	if (hasBuildScript) console.log(`  ${cyan("bun run build")}`);
 	console.log(`  ${cyan("zhiva start .")}`);
 	console.log("");
 	console.log(dim("Edit zhiva.json to set the icons."));

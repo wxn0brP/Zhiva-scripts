@@ -1,5 +1,7 @@
 import { $ } from "bun";
-import { cyan, red } from "../../utils/color";
+import { existsSync } from "fs";
+import { rm } from "fs/promises";
+import { cyan, dim, red } from "../../utils/color";
 
 export async function getConfig(name: string) {
 	let branch: string | undefined;
@@ -59,10 +61,33 @@ export async function getConfig(name: string) {
 }
 
 export async function clone(cloneUrl: string, name: string, branch = "") {
-	if (branch) {
-		await $`git clone -b ${branch} ${cloneUrl} ${name}`;
-	} else {
-		await $`git clone ${cloneUrl} ${name}`;
+	const existed = existsSync(name);
+	const result = branch
+		? await $`git clone -b ${branch} ${cloneUrl} ${name}`.nothrow()
+		: await $`git clone ${cloneUrl} ${name}`.nothrow();
+
+	if (result.exitCode !== 0) {
+		if (!existed)
+			await rm(name, {
+				recursive: true,
+				force: true,
+			});
+		console.error(red(`Failed to clone ${cloneUrl}.`));
+		console.error(
+			red(
+				"Check the repository name, your connection and that the repository is public.",
+			),
+		);
+		process.exit(1);
+	}
+}
+
+export async function pull() {
+	const result = await $`git pull`.nothrow();
+	if (result.exitCode !== 0) {
+		console.error(red("Failed to update the application."));
+		console.error(dim(`Run "git pull" manually in ${process.cwd()}.`));
+		process.exit(1);
 	}
 }
 

@@ -1,4 +1,5 @@
 export function ensureAppName(name: string) {
+	name = name.replaceAll("\\", "/");
 	if (!name.includes("/")) name = `wxn0brP/${name}`;
 	return name;
 }

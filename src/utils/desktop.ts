@@ -38,7 +38,7 @@ export function createDesktopFile(opts: Opts) {
 [Desktop Entry]
 Type=Application
 Name=${shortName}
-Exec=${bunPath} run ${process.env.HOME}/.zhiva/bin/zhiva start ${opts.name}
+Exec="${bunPath}" run "${process.env.HOME}/.zhiva/bin/zhiva" start "${opts.name}"
 ${icon ? `Icon=${icon}` : ""}
 `.trim();
 
@@ -100,6 +100,7 @@ export function createLnkFile(opts: Opts) {
 				recursive: true,
 			});
 
+		const psQuote = (value: string) => value.replaceAll("'", "''");
 		const shortcutPath = join(path, `${shortName}.lnk`);
 		let iconPath = opts.win_icon;
 		if (iconPath === "default") {
@@ -111,10 +112,10 @@ export function createLnkFile(opts: Opts) {
 
 		const psContent = `
 $WshShell = New-Object -ComObject WScript.Shell
-$Shortcut = $WshShell.CreateShortcut('${shortcutPath}')
+$Shortcut = $WshShell.CreateShortcut('${psQuote(shortcutPath)}')
 $Shortcut.TargetPath = "$env:ComSpec"
-$Shortcut.Arguments = "/c set _ZHIVA_BG=1 && %USERPROFILE%\\.zhiva\\bin\\zhiva.cmd start ${opts.name}"
-${iconPath ? `$Shortcut.IconLocation = '${iconPath}'` : ""}
+$Shortcut.Arguments = '/c set _ZHIVA_BG=1 && "%USERPROFILE%\\.zhiva\\bin\\zhiva.cmd" start "${opts.name.replaceAll("'", "''")}"'
+${iconPath ? `$Shortcut.IconLocation = '${psQuote(iconPath)}'` : ""}
 $Shortcut.WindowStyle = 7
 $Shortcut.Save()
 `.trim();

@@ -1,10 +1,9 @@
-import { $ } from "bun";
 import { existsSync } from "fs";
 import { rm } from "fs/promises";
 import { join, resolve } from "path";
 import { InstallationStrategy } from "../types";
 import { chdirToApps } from "../utils";
-import { clone } from "../utils/git";
+import { clone, pull } from "../utils/git";
 import { red } from "../../utils/color";
 
 export function isHttpGitInput(input: string) {
@@ -26,7 +25,7 @@ export const httpGitStrategy: InstallationStrategy = async context => {
 
 	if (existsSync(appPath)) {
 		process.chdir(appPath);
-		if (existsSync(".git")) await $`git pull`;
+		if (existsSync(".git")) await pull();
 		return {
 			name,
 		};
