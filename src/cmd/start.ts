@@ -174,6 +174,10 @@ if (!existsSync(appPath)) {
 process.chdir(appPath);
 
 async function start() {
+	// --- CONSOLE ---
+	if (process.platform === "win32" && process.env.ZHIVA_LAUNCH_BG)
+		import("../utils/hide").then(m => m.hideWindowsConsole());
+
 	// --- STATIC APPS ---
 	if (existsSync("zhiva.json")) {
 		const config = JSON.parse(readFileSync("zhiva.json", "utf-8"));
@@ -227,10 +231,6 @@ async function start() {
 		console.error(red("Failed to start Bun:"), err);
 		process.exit(1);
 	});
-
-	if (process.platform === "win32") {
-		import("../utils/hide").then(m => m.hideWindowsConsole());
-	}
 }
 
 start();
