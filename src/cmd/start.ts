@@ -28,6 +28,9 @@ const { values, positionals } = parseArgs({
 			type: "boolean",
 			short: "u",
 		},
+		hide: {
+			type: "boolean",
+		},
 	},
 	allowPositionals: true,
 });
@@ -42,6 +45,7 @@ ${bold("Options:")}
   ${cyan("-e, --engine <mode>")}   Update Zhiva engine (default: 0)
   ${cyan("-d, --deps <mode>")}     Update Zhiva dependencies (default: 0)
   ${cyan("-u, --update")}          Force engine and dependencies update
+  ${cyan("--hide")}                Hide the console window on Windows
 
 ${bold("Mode:")}
   0 = auto (at most once per hour)
@@ -175,7 +179,7 @@ process.chdir(appPath);
 
 async function start() {
 	// --- CONSOLE ---
-	if (process.platform === "win32" && process.env.ZHIVA_LAUNCH_BG)
+	if (process.platform === "win32" && values.hide)
 		import("../utils/hide").then(m => m.hideWindowsConsole());
 
 	// --- STATIC APPS ---

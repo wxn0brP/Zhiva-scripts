@@ -114,7 +114,7 @@ export function createLnkFile(opts: Opts) {
 $WshShell = New-Object -ComObject WScript.Shell
 $Shortcut = $WshShell.CreateShortcut('${psQuote(shortcutPath)}')
 $Shortcut.TargetPath = '${psQuote(join(homedir(), ".zhiva", "bin", "zhiva.cmd"))}'
-$Shortcut.Arguments = 'start "${psQuote(opts.name)}"'
+$Shortcut.Arguments = 'start "${psQuote(opts.name)}" --hide'
 ${iconPath ? `$Shortcut.IconLocation = '${psQuote(iconPath)}'` : ""}
 $Shortcut.WindowStyle = 7
 $Shortcut.Save()

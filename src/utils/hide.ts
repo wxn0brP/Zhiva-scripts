@@ -1,8 +1,6 @@
 import { dlopen, FFIType } from "bun:ffi";
 
 export function hideWindowsConsole() {
-	if (process.env.ZHIVA_DO_NOT_HIDE_CONSOLE === "true") return;
-
 	const kernel32 = dlopen("kernel32.dll", {
 		GetConsoleWindow: {
 			args: [],
